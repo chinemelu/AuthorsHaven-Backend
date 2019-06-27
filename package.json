@@ -1,0 +1,27 @@
+{
+  "name": "authorshaven-backend",
+  "version": "1.0.0",
+  "description": "Backend for Author's Haven Application",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.0.1",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.18.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chinemelu/AuthorsHaven-Backend.git"
+  },
+  "author": "Chinemelu Anthony Nwosu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chinemelu/AuthorsHaven-Backend/issues"
+  },
+  "homepage": "https://github.com/chinemelu/AuthorsHaven-Backend#readme"
+}
