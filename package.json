@@ -7,12 +7,14 @@
     "express": "^4.17.1"
   },
   "devDependencies": {
+    "chai": "4.2.0",
+    "chai-http": "4.3.0",
     "eslint": "6.0.1",
-    "eslint-config-airbnb": "17.1.0"
+    "eslint-config-airbnb": "17.1.0",
+    "mocha": "6.1.4"
   },
   "scripts": {
-    "test": "mocha",
-    "dummyTest": "node src/app.js"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
