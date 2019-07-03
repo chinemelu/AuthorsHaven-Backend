@@ -4,17 +4,22 @@
   "description": "Backend for Author's Haven Application",
   "main": "app.js",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "4.17.1"
   },
   "devDependencies": {
     "chai": "4.2.0",
     "chai-http": "4.3.0",
+    "coveralls": "3.0.4",
     "eslint": "6.0.1",
     "eslint-config-airbnb": "17.1.0",
-    "mocha": "6.1.4"
+    "mocha": "6.1.4",
+    "mocha-lcov-reporter": "1.3.0",
+    "nyc": "14.1.1"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "coverage": "nyc npm test && nyc report --reporter=text-lcov",
+    "coveralls": "npm run coverage"
   },
   "repository": {
     "type": "git",
