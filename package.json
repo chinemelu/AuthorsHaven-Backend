@@ -4,10 +4,10 @@
   "description": "Backend for Author's Haven Application",
   "main": "app.js",
   "dependencies": {
-    "babel-cli": "6.26.0",
-    "@babel/preset-env": "7.5.0",
+    "@babel/cli": "^7.5.0",
     "@babel/core": "7.5.0",
     "@babel/node": "7.5.0",
+    "@babel/preset-env": "7.5.0",
     "@babel/register": "7.4.4",
     "dotenv": "8.0.0",
     "express": "4.17.1",
