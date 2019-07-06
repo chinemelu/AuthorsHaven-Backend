@@ -4,6 +4,7 @@
   "description": "Backend for Author's Haven Application",
   "main": "app.js",
   "dependencies": {
+    "babel-cli": "6.26.0",
     "dotenv": "8.0.0",
     "express": "4.17.1",
     "pg": "7.11.0",
