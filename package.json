@@ -4,6 +4,10 @@
   "description": "Backend for Author's Haven Application",
   "main": "app.js",
   "dependencies": {
+    "@babel/core": "7.5.0",
+    "@babel/preset-env": "7.5.0",
+    "@babel/node": "7.5.0",
+    "@babel/register": "7.4.4",
     "dotenv": "8.0.0",
     "express": "4.17.1",
     "pg": "7.11.0",
@@ -11,6 +15,7 @@
     "sequelize": "5.9.2"
   },
   "devDependencies": {
+    "@babel/cli": "^7.5.0",
     "@babel/core": "7.5.0",
     "@babel/node": "7.5.0",
     "@babel/preset-env": "7.5.0",
@@ -31,7 +36,9 @@
     "coverage": "nyc npm test && nyc report --reporter=text-lcov",
     "coveralls": "npm run coverage",
     "babel-node": "babel-node --presets=latest",
-    "start-dev": "nodemon --exec babel-node ./server/app.js"
+    "start": "npm run build && node build/app.js",
+    "start-dev": "nodemon --exec babel-node server/app.js",
+    "build": "babel server -d build"
   },
   "repository": {
     "type": "git",
@@ -41,6 +48,9 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/chinemelu/AuthorsHaven-Backend/issues"
+  },
+  "engines": {
+    "node": "10.13.0"
   },
   "homepage": "https://github.com/chinemelu/AuthorsHaven-Backend#readme"
 }
