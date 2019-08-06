@@ -1,5 +1,6 @@
 import User from '../models/user';
 import ApiResponses from '../helper/ApiResponses';
+import signupErrorHandlers from '../helper/signupErrorHandlers';
 
 /**
  * @class UserController
@@ -26,16 +27,7 @@ class UserController {
     } catch (error) {
       Object.keys(error.errors).forEach((errorProperty) => {
         const errorType = error.errors[errorProperty].kind;
-        if (errorType === 'user defined' || errorType === 'required') {
-          return ApiResponses.status400(res, error.errors);
-        }
-        if (error.errors.email && error.errors.email.kind === 'unique') {
-          return ApiResponses.status409(res, error.errors.email.message);
-        }
-        if (error.errors.username && error.errors.username.kind === 'unique') {
-          return ApiResponses.status409(res, error.errors.username.message);
-        }
-        ApiResponses.status500(res, 'Server error');
+        return signupErrorHandlers(res, errorType, error);
       });
     }
   }
