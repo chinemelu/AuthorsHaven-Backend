@@ -1,3 +1,8 @@
+/**
+ * sanitises a name input
+ * @param {string} name
+ * @returns {string} - santised name
+ */
 const sanitizeNameInput = (name) => {
   const trimmedName = name.trim();
   const firstLetter = trimmedName.substring(0, 1);
