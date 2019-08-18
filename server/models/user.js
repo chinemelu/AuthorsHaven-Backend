@@ -46,6 +46,9 @@ const userSchema = new mongoose.Schema({
       message: () => 'Invalid email'
     },
   }
+},
+{
+  timestamps: true
 });
 
 userSchema.pre('validate', function preValidation() {

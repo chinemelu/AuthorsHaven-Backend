@@ -1,24 +1,19 @@
 import express from 'express';
-import morgan from 'morgan';
-import ApiResponses from './helper/ApiResponses';
+import graphqlHTTP from 'express-graphql';
 import { connectToDb } from './models';
-import user from './routes/user';
+import schema from './schema';
+import rootResolver from './resolvers';
+
 
 const app = express();
+app.use('/graphql', graphqlHTTP({
+  schema,
+  rootValue: rootResolver,
+  graphiql: true
+}));
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-app.use(morgan('dev'));
-
-app.get('/', (res) => {
-  res.send('Hello world!');
-});
-app.use('/api/v1/auth', user);
-app.use((req, res) => {
-  ApiResponses.status404(res, 'Route does not exist');
-});
-
 
 const connectToServer = async () => {
   const applicationServer = await connectToDb();

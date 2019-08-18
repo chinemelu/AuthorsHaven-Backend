@@ -10,20 +10,25 @@ describe('User signup', () => {
   describe('Empty input fields', () => {
     it('should throw an error if the firstname input field is empty',
       async () => {
-        const user = {
-          firstname: '',
-          lastname: 'user',
-          email: 'testuser@gmail.com',
-          username: 'testuser',
-          password: 'testpassword',
-        };
+        const mutation = `mutation {
+          signupUser (userSignupInput: {
+            firstname: "",
+            lastname: "user",
+            email: "testuser@gmail.com",
+            username: "testuser",
+            password: "testpassword",
+          }) {
+            email
+            username
+          }
+        }`;
         try {
           const response = await chai.request(app)
-            .post('/api/v1/auth/signup')
-            .send(user);
-          expect(response.status).to.equal(400);
-          expect(response.body.error.firstname.message)
+            .post('/graphql')
+            .send({ query: mutation });
+          expect(response.body.errors[0].message)
             .to.equal('First name is required');
+          expect(response.status).equal(200);
         } catch (error) {
           throw error;
         }
