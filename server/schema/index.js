@@ -12,6 +12,7 @@ const schema = buildSchema(`
 
   type User {
     _id: ID!
+    token: String!
     username: String!
     firstname: String
     lastname: String

@@ -4,10 +4,12 @@
   "description": "Backend for Author's Haven Application",
   "main": "app.js",
   "dependencies": {
+    "bcrypt": "^3.0.6",
     "dotenv": "8.0.0",
     "express": "^4.17.1",
     "express-graphql": "^0.9.0",
     "graphql": "^14.4.2",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "5.6.4",
     "mongoose-beautiful-unique-validation": "7.1.1"
   },
