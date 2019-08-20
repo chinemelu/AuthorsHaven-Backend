@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import beautifyUnique from 'mongoose-beautiful-unique-validation';
+import bcrypt from 'bcrypt';
 import sanitizeInputData from '../helper/sanitizeInputData';
 
 const userSchema = new mongoose.Schema({
@@ -7,7 +8,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: 'Username exists',
     required: [true, 'Username is required'],
-    minlength: [4, 'Username must be at least 4 characters'],
+    minlength: [4, 'Username must consist of at least 4 characters'],
     maxlength: [15, 'Username must not exceed 15 characters'],
     validate: {
       validator(username) {
@@ -15,8 +16,8 @@ const userSchema = new mongoose.Schema({
         return usernameValidationRegex.test(username);
       },
       message: () => {
-        const usernameValidationErrorMessage = `Username can consist of only 
-        underscores, alphabets or numbers`;
+        const usernameValidationErrorMessage = 'Username can consist of only'
+        + ' underscores, alphabets or numbers';
         return usernameValidationErrorMessage;
       }
     },
@@ -64,6 +65,15 @@ userSchema.pre('validate', function preValidation() {
     .password(thisObject._doc.password);
   thisObject._doc.username = sanitizeInputData
     .username(thisObject._doc.username);
+});
+
+userSchema.post('validate', async function passwordHash() {
+  try {
+    const saltRounds = 10;
+    this._doc.password = await bcrypt.hash(this._doc.password, saltRounds);
+  } catch (err) {
+    throw err;
+  }
 });
 
 userSchema.plugin(beautifyUnique);

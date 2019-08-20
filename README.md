@@ -12,10 +12,13 @@ Author's Haven is a platform that is similar to medium that allows users to expr
 * Type `git clone https://github.com/chinemelu/AuthorsHaven-Backend.git` and press the "Enter" key
 
 ### Dependencies
-[dotenv](https://github.com/motdotla/dotenv) - Loads environment variables from .env for nodejs projects 
-[Express](https://expressjs.com/) - Fast, unopinionated, minimalist web framework for Node.js
-[Mongoose](https://mongoosejs.com/) - elegant mongodb object modeling for node.js
-[Mongoose-Beautiful-Unique-Validation](https://github.com/matteodelabre/mongoose-beautiful-unique-validation) - Plugin for Mongoose that turns duplicate errors into regular Mongoose validation errors
+* [dotenv](https://github.com/motdotla/dotenv) - Loads environment variables from .env for nodejs projects 
+* [bcrypt](https://github.com/kelektiv/node.bcrypt.js/) - A library to help you hash passwords.
+* [Express-Graphql](https://github.com/graphql/express-graphql) - Create a GraphQL HTTP server with Express.
+* [Express](https://expressjs.com/) - Fast, unopinionated, minimalist web framework for Node.js
+* [Mongoose](https://mongoosejs.com/) - elegant mongodb object modeling for node.js
+* [Mongoose-Beautiful-Unique-Validation](https://github.com/matteodelabre/mongoose-beautiful-unique-validation) - Plugin for Mongoose that turns duplicate errors into regular Mongoose validation errors
+* [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) - JsonWebToken implementation for node.js
 
 ## Testing
 * The test is written using Mocha, Chai and Chai-http

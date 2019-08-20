@@ -1,5 +1,6 @@
 
 import User from '../models/user';
+import createToken from '../helper/createToken';
 
 /**
  * @Object UserResolver
@@ -19,7 +20,12 @@ const UserResolver = {
     });
     try {
       const savedUser = await user.save();
-      return savedUser;
+      /* eslint no-underscore-dangle: ["error", { "allow": ["_id", "_doc"] }] */
+      const token = createToken(savedUser._id);
+      return {
+        ...savedUser._doc,
+        token
+      };
     } catch (error) {
       Object.keys(error.errors).forEach((errorProperty) => {
         const errorMessage = error.errors[errorProperty];
