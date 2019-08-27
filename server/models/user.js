@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import beautifyUnique from 'mongoose-beautiful-unique-validation';
 import bcrypt from 'bcrypt';
+import uniqueValidator from 'mongoose-unique-validator';
 import sanitizeInputData from '../helper/sanitizeInputData';
 
 const userSchema = new mongoose.Schema({
@@ -46,6 +46,10 @@ const userSchema = new mongoose.Schema({
       },
       message: () => 'Invalid email'
     },
+  },
+  isVerified: {
+    type: Boolean,
+    default: false
   }
 },
 {
@@ -76,8 +80,8 @@ userSchema.post('validate', async function passwordHash() {
   }
 });
 
-userSchema.plugin(beautifyUnique);
 
+userSchema.plugin(uniqueValidator);
 const User = mongoose.model('User', userSchema);
 
 export default User;

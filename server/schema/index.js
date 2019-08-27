@@ -18,6 +18,7 @@ const schema = buildSchema(`
     lastname: String
     email: String!
     password: String
+    isVerified: Boolean
     createdAt: String
     updatedAt: String
   }
@@ -28,8 +29,6 @@ const schema = buildSchema(`
     lastname: String!
     email: String!
     password: String!
-    createdAt: String
-    updatedAt: String
   }
 
   schema {
