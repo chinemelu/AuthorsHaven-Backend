@@ -1,6 +1,7 @@
 import express from 'express';
 import graphqlHTTP from 'express-graphql';
 import { connectToDb } from './models';
+import EmailHelperClass from './helper/EmailHelperClass';
 import schema from './schema';
 import rootResolver from './resolvers';
 
@@ -11,6 +12,7 @@ app.use('/graphql', graphqlHTTP({
   rootValue: rootResolver,
   graphiql: true
 }));
+app.get('/api/v1/verify/:token', EmailHelperClass.verifyEmail);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

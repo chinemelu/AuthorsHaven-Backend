@@ -9,8 +9,8 @@ class santizeInputData {
  * @return {string} sanitized username
  */
   static username(username) {
-    username = username.trim().toLowerCase();
-    return username;
+    const sanitizedUsername = username.trim().toLowerCase();
+    return sanitizedUsername;
   }
 
   /**
@@ -18,8 +18,7 @@ class santizeInputData {
    * @return {string} sanitized firstname
    */
   static firstname(firstname) {
-    const sanitizedNameProperty = sanitizeNameInput(firstname);
-    return sanitizedNameProperty;
+    return sanitizeNameInput(firstname);
   }
 
   /**
@@ -27,8 +26,7 @@ class santizeInputData {
  * @return {string} sanitized last name
  */
   static lastname(lastname) {
-    const sanitizedNameProperty = sanitizeNameInput(lastname);
-    return sanitizedNameProperty;
+    return sanitizeNameInput(lastname);
   }
 
   /**
@@ -36,8 +34,8 @@ class santizeInputData {
  * @return {string} sanitized password
 */
   static password(password) {
-    password = password.trim();
-    return password;
+    const sanitizedPassword = password.trim();
+    return sanitizedPassword;
   }
 
   /**
@@ -45,10 +43,9 @@ class santizeInputData {
  * @return {string} sanitized email
  */
   static email(email) {
-    const newEmail = email.trim().toLowerCase();
-    return newEmail;
+    const sanitizedEmail = email.trim().toLowerCase();
+    return sanitizedEmail;
   }
 }
-
 
 export default santizeInputData;

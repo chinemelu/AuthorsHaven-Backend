@@ -1,36 +1,34 @@
 
-import User from '../models/user';
-import createToken from '../helper/createToken';
+import UserService from '../services/UserService';
+import TokenHelperClass from '../helper/TokenHelperClass';
+import EmailHelperClass from '../helper/EmailHelperClass';
+import constants from '../constants';
+
+/* eslint no-underscore-dangle: ["error", { "allow": ["_id", "_doc"] }] */
 
 /**
  * @Object UserResolver
  */
+
 const UserResolver = {
   /**
    * @param {Object} args - argument
    * @return {Object} error response
    */
   signupUser: async (args) => {
-    const user = new User({
-      username: args.userSignupInput.username || '',
-      firstname: args.userSignupInput.firstname || '',
-      lastname: args.userSignupInput.lastname || '',
-      password: args.userSignupInput.password || '',
-      email: args.userSignupInput.email || ''
-    });
     try {
-      const savedUser = await user.save();
-      /* eslint no-underscore-dangle: ["error", { "allow": ["_id", "_doc"] }] */
-      const token = createToken(savedUser._id);
-      return {
-        ...savedUser._doc,
-        token
-      };
+      const savedUser = await UserService.create(args.userSignupInput);
+      const token = TokenHelperClass.createToken(savedUser._id, '12h');
+      EmailHelperClass.sendEmail(
+        savedUser._doc.email,
+        process.env.EMAIL_SENDER,
+        constants.emailVerification.subject,
+        `${constants.emailVerification.text} 
+          <a href="${process.env.DEV_BASE_URL}/verify/${token}">link</a>`
+      );
+      return { ...savedUser._doc, password: null, token };
     } catch (error) {
-      Object.keys(error.errors).forEach((errorProperty) => {
-        const errorMessage = error.errors[errorProperty];
-        throw new Error(errorMessage);
-      });
+      throw error;
     }
   }
 };
