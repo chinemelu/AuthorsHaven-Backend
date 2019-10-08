@@ -1,5 +1,6 @@
 
 import UserService from '../services/UserService';
+import UserProfileService from '../services/UserProfileService';
 import TokenHelperClass from '../helper/TokenHelperClass';
 import EmailHelperClass from '../helper/EmailHelperClass';
 import constants from '../constants';
@@ -19,6 +20,7 @@ const UserResolver = {
     try {
       const savedUser = await UserService.create(args.userSignupInput);
       const token = TokenHelperClass.createToken(savedUser._id, '12h');
+      await UserProfileService.create(args.userProfileInput, savedUser._id);
       EmailHelperClass.sendEmail(
         savedUser._doc.email,
         process.env.EMAIL_SENDER,
