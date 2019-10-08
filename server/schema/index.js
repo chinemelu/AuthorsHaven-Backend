@@ -3,7 +3,8 @@ import { buildSchema } from 'graphql';
 
 const schema = buildSchema(`
   type Mutation {
-    signupUser(userSignupInput: UserInput): User
+    signupUser(userSignupInput: UserInput, 
+      userProfileInput: UserProfileInput): User
   }
 
   type Query {
@@ -19,6 +20,8 @@ const schema = buildSchema(`
     email: String!
     password: String
     isVerified: Boolean
+    bio: String
+    avatar: String
     createdAt: String
     updatedAt: String
   }
@@ -29,6 +32,11 @@ const schema = buildSchema(`
     lastname: String!
     email: String!
     password: String!
+  }
+
+  input UserProfileInput {
+    bio: String
+    avatar: String
   }
 
   schema {
