@@ -4,11 +4,18 @@ import { buildSchema } from 'graphql';
 const schema = buildSchema(`
   type Mutation {
     signupUser(userSignupInput: UserInput, 
-      userProfileInput: UserProfileInput): User
+    userProfileInput: UserProfileInput): User!
+    sendResetPasswordEmail(email: String!): String
+    resetUserPassword(password: String!, token: String! ): User!
   }
 
   type Query {
     User(userQuery: UserInput): User
+  }
+
+  type Password {
+    token: String!
+    password: String
   }
 
   type User {
