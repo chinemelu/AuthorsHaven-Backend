@@ -18,7 +18,7 @@ describe('User signup', () => {
             .send({ query: mutation });
           expect(response.body.errors[0].message)
             .to.equal('First name is required');
-          expect(response.status).equal(200);
+          expect(response.status).equal(500);
         } catch (error) {
           throw error;
         }
@@ -33,7 +33,7 @@ describe('User signup', () => {
             .send({ query: mutation });
           expect(response.body.errors[0].message)
             .to.equal('Last name is required');
-          expect(response.status).equal(200);
+          expect(response.status).equal(500);
         } catch (error) {
           throw error;
         }
@@ -47,7 +47,7 @@ describe('User signup', () => {
             .send({ query: mutation });
           expect(response.body.errors[0].message)
             .to.equal('Username is required');
-          expect(response.status).equal(200);
+          expect(response.status).equal(500);
         } catch (error) {
           throw error;
         }
@@ -61,7 +61,7 @@ describe('User signup', () => {
             .send({ query: mutation });
           expect(response.body.errors[0].message)
             .to.equal('Password is required');
-          expect(response.status).equal(200);
+          expect(response.status).equal(500);
         } catch (error) {
           throw error;
         }
@@ -75,7 +75,7 @@ describe('User signup', () => {
             .send({ query: mutation });
           expect(response.body.errors[0].message)
             .to.equal('Email is required');
-          expect(response.status).equal(200);
+          expect(response.status).equal(500);
         } catch (error) {
           throw error;
         }
@@ -92,7 +92,7 @@ describe('User signup', () => {
             .send({ query: mutation });
           expect(response.body.errors[0].message)
             .to.equal('Password must be at least 8 characters');
-          expect(response.status).equal(200);
+          expect(response.status).equal(500);
         } catch (error) {
           throw error;
         }
@@ -107,7 +107,7 @@ describe('User signup', () => {
             .send({ query: mutation });
           expect(response.body.errors[0].message)
             .to.equal('Invalid email');
-          expect(response.status).equal(200);
+          expect(response.status).equal(500);
         } catch (error) {
           throw error;
         }
@@ -125,7 +125,7 @@ describe('User signup', () => {
           .eql(
             'Username can consist of only underscores, alphabets or numbers'
           );
-        expect(response.status).equal(200);
+        expect(response.status).equal(500);
       } catch (error) {
         throw error;
       }
@@ -142,7 +142,7 @@ describe('User signup', () => {
             .eql(
               'Username must consist of at least 4 characters'
             );
-          expect(response.status).equal(200);
+          expect(response.status).equal(500);
         } catch (error) {
           throw error;
         }
@@ -159,7 +159,7 @@ describe('User signup', () => {
             .eql(
               'Username must not exceed 15 characters'
             );
-          expect(response.status).equal(200);
+          expect(response.status).equal(500);
         } catch (error) {
           throw error;
         }

@@ -33,7 +33,7 @@ class UserService {
     * @param {String} id - the id of a user
     * @returns {Object} user object or empty object
     */
-  static async find(id) {
+  static async findById(id) {
     try {
       const user = await User.findOne({ _id: id });
       if (user) {
@@ -42,6 +42,23 @@ class UserService {
       return {};
     } catch (error) {
       return 'Database error';
+    }
+  }
+
+  /**
+   * checks if a user exists using an email
+    * @param {String} email - the email of a user
+    * @returns {Object} user object or empty object
+    */
+  static async findByEmail(email) {
+    try {
+      const user = await User.findOne({ email });
+      if (user) {
+        return user;
+      }
+      return {};
+    } catch (error) {
+      console.log('error', error);
     }
   }
 

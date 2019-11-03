@@ -7,7 +7,7 @@ const userMockData = {
         email: "testuser@gmail.com",
         username: "testuser",
         password: "testpassword",
-      }) {
+      }, userProfileInput: { bio: "", avatar: ""}) {
         email
         username
       }
@@ -19,7 +19,7 @@ const userMockData = {
       email: "testuser@gmail.com",
       username: "testuser",
       password: "testpassword",
-    }) {
+    }, userProfileInput: { bio: "", avatar: ""}) {
       email
       username
     }
@@ -115,7 +115,7 @@ const userMockData = {
         email: "testuser@gmail.com",
         username: "testusernameistoolong",
         password: "testpassword",
-      }) {
+      }, userProfileInput: { bio: "", avatar: ""}) {
         email
         username
       }

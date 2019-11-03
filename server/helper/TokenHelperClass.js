@@ -9,11 +9,12 @@ class TokenHelperClass {
  * @returns {Object} - Object containing details of decoded token
  */
   static verifyToken(token) {
+    if (!token) return { error: 'No token provided' };
     return jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err) {
-        throw err;
+        return { error: err };
       }
-      return decoded;
+      return { decodedToken: decoded };
     });
   }
 

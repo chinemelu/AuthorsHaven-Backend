@@ -16,8 +16,12 @@ class EmailHelperClass {
     try {
       const { token } = req.params;
       const verifiedToken = TokenHelperClass.verifyToken(token);
-      const { userId } = verifiedToken;
-      const foundUser = await UserService.find(userId);
+
+      if (verifiedToken.error) {
+        return ResponseHandler.error(401, verifiedToken.error, res);
+      }
+      const { userId } = verifiedToken.decodedToken;
+      const foundUser = await UserService.findById(userId);
 
       EmailHelperClass.emailVerificationValidation(foundUser, res);
 
@@ -33,7 +37,7 @@ class EmailHelperClass {
         });
       }
     } catch (error) {
-      res.status(500).send({ error });
+      ResponseHandler.error(500, error, res).send({ error });
     }
   }
 
