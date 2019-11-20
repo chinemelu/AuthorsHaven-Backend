@@ -2,6 +2,7 @@ import UserService from '../services/UserService';
 import UserProfileService from '../services/UserProfileService';
 import TokenHelperClass from '../helper/TokenHelperClass';
 import EmailHelperClass from '../helper/EmailHelperClass';
+import UserHelperClass from '../helper/UserHelperClass';
 import constants from '../constants';
 
 /* eslint no-underscore-dangle: ["error", { "allow": ["_id", "_doc"] }] */
@@ -60,6 +61,24 @@ const UserResolver = {
       }
       await UserService.update({ password: args.password },
         { _id: decodedToken.decoded.userId });
+    } catch (error) {
+      throw error;
+    }
+  },
+  loginUser: async (args) => {
+    try {
+      if (!args.usernameOrEmail) throw new Error('Enter username or email');
+      if (!args.password) throw new Error('Enter password');
+      const savedUser = await UserService
+        .findByUsernameOrEmail(args.usernameOrEmail);
+      if (savedUser === null) {
+        throw new Error('Incorrect credentials');
+      }
+      const token = TokenHelperClass.createToken(savedUser._id, '12h');
+      const isPasswordCorrect = await UserHelperClass
+        .isPasswordCorrect(args.password, savedUser.password);
+      if (!isPasswordCorrect) throw new Error('Incorrect credentials');
+      return { ...savedUser._doc, password: null, token };
     } catch (error) {
       throw error;
     }
