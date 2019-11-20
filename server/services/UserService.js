@@ -53,7 +53,7 @@ class UserService {
   static async findByEmail(email) {
     try {
       const user = await User.findOne({ email });
-      if (user) {
+      if (Object.keys(user).length > 0) {
         return user;
       }
       return {};
@@ -71,6 +71,23 @@ class UserService {
   static async update(identifier, toBeUpdated) {
     try {
       await User.updateOne(identifier, toBeUpdated);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * find a user by username or email
+    * @param {String} usernameOrEmail - username or email
+    * @returns {Object} user object or empty object
+    */
+  static async findByUsernameOrEmail(usernameOrEmail) {
+    try {
+      const user = await User.findOne({
+        $or: [{ username: usernameOrEmail },
+          { email: usernameOrEmail }]
+      });
+      return user;
     } catch (error) {
       throw error;
     }

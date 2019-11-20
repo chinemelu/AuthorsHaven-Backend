@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import TokenHelperClass from './TokenHelperClass';
 import ResponseHandler from './ResponseHandler';
 
@@ -16,6 +17,20 @@ class UserHelperClass {
     if (verifiedToken.error) {
       return ResponseHandler.error(401, 'Invalid Token', res);
     }
+  }
+
+  /**
+  * @param {String} inputPassword - password entered by user
+ * @param {String} passwordHash - user password in database
+ * @returns {Object} - Object containing details of decoded token
+ */
+  static async isPasswordCorrect(inputPassword, passwordHash) {
+    const match = await bcrypt.compare(inputPassword, passwordHash);
+
+    if (match) {
+      return true;
+    }
+    return false;
   }
 }
 
