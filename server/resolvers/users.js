@@ -59,8 +59,10 @@ const UserResolver = {
       if (decodedToken.error) {
         throw new Error('Token is expired or Invalid');
       }
-      await UserService.update({ password: args.password },
-        { _id: decodedToken.decoded.userId });
+      const hashedPassword = await UserHelperClass
+        .encryptPassword(args.password);
+      await UserService.update({ _id: decodedToken.decodedToken.userId },
+        { password: hashedPassword });
     } catch (error) {
       throw error;
     }

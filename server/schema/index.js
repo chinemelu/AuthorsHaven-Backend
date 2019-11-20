@@ -6,7 +6,7 @@ const schema = buildSchema(`
     signupUser(userSignupInput: UserInput, 
     userProfileInput: UserProfileInput): User!
     sendResetPasswordEmail(email: String!): String
-    resetUserPassword(password: String!, token: String! ): User!
+    resetUserPassword(password: String!, token: String! ): User
     loginUser(usernameOrEmail: String!, password: String!): User!
   }
 

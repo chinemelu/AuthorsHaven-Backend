@@ -58,7 +58,7 @@ class UserService {
       }
       return {};
     } catch (error) {
-      console.log('error', error);
+      throw error;
     }
   }
 
