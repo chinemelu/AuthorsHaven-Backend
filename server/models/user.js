@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt';
 import uniqueValidator from 'mongoose-unique-validator';
 import sanitizeInputData from '../helper/sanitizeInputData';
+import UserHelperClass from '../helper/UserHelperClass';
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -73,13 +73,12 @@ userSchema.pre('validate', function preValidation() {
 
 userSchema.post('validate', async function passwordHash() {
   try {
-    const saltRounds = 10;
-    this._doc.password = await bcrypt.hash(this._doc.password, saltRounds);
+    this._doc.password = await UserHelperClass
+      .encryptPassword(this._doc.password);
   } catch (err) {
     throw err;
   }
 });
-
 
 userSchema.plugin(uniqueValidator);
 const User = mongoose.model('User', userSchema);
