@@ -8,6 +8,7 @@ const schema = buildSchema(`
     sendResetPasswordEmail(email: String!): String
     resetUserPassword(password: String!, token: String! ): User
     loginUser(usernameOrEmail: String!, password: String!): User!
+    createArticle(articleInput: articleInput): Article!
   }
 
   type Query {
@@ -32,6 +33,18 @@ const schema = buildSchema(`
     avatar: String
     createdAt: String
     updatedAt: String
+  }
+
+  type Article {
+    _id: ID!
+    title: String!
+    body: String!
+  }
+
+  input articleInput {
+    title: String!
+    body: String!
+    authorId: String!
   }
 
   input UserInput {
