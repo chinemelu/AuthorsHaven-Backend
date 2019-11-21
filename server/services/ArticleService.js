@@ -5,7 +5,7 @@ import Article from '../models/article';
  */
 class ArticleService {
   /**
-   * creates a new user
+   * creates a new article
     * @param {Object} articleObject - the article object
     * @returns {Object} savedArticle
     */
@@ -17,6 +17,23 @@ class ArticleService {
         author: articleObject.authorId || ''
       });
       const savedArticle = await article.save();
+      return savedArticle;
+    } catch (error) {
+      Object.keys(error.errors).forEach((errorProperty) => {
+        const errorMessage = error.errors[errorProperty];
+        throw new Error(errorMessage);
+      });
+    }
+  }
+
+  /**
+   * finds an article by Id
+    * @param {Object} id - the article id inputted by the user
+    * @returns {Object} savedArticle
+    */
+  static async findById(id) {
+    try {
+      const savedArticle = await Article.findById(id);
       return savedArticle;
     } catch (error) {
       Object.keys(error.errors).forEach((errorProperty) => {

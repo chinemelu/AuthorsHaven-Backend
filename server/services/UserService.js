@@ -35,7 +35,7 @@ class UserService {
     */
   static async findById(id) {
     try {
-      const user = await User.findOne({ _id: id });
+      const user = await User.findById(id);
       return user;
     } catch (error) {
       return 'Database error';

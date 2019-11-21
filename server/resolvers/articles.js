@@ -26,6 +26,18 @@ const ArticleResolver = {
     } catch (error) {
       throw error;
     }
+  },
+  readArticle: async (args) => {
+    try {
+      if (!args.id) throw new Error('ArticleId is required');
+      const isIdValid = GeneralHelperClass.isIdValid(args.id);
+      if (!isIdValid) throw new Error('Invalid articleId');
+      const savedArticle = await ArticleService.findById(args.id);
+      if (savedArticle === null) throw new Error('Article does not exist');
+      return { ...savedArticle._doc };
+    } catch (error) {
+      throw error;
+    }
   }
 };
 
