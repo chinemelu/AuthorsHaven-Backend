@@ -64,6 +64,27 @@ const ArticleResolver = {
     } catch (error) {
       throw error;
     }
+  },
+  deleteArticle: async (args) => {
+    try {
+      args = args.articleInput;
+      const savedUser = await UserService.findById(args.authorId);
+      const isAuthorIdValid = GeneralHelperClass.isIdValid(args.authorId);
+      const isArticleIdValid = GeneralHelperClass.isIdValid(args._id);
+      const savedArticle = await ArticleService.findById(args._id);
+      if (!args.authorId) throw new Error('AuthorId is required');
+      if (!isAuthorIdValid) throw new Error('Invalid authorId');
+      if (!isArticleIdValid) throw new Error('Article Id is invalid');
+      if (savedUser === null) throw new Error('User does not exist');
+      const userCanDeleteArticle = await UserHelperClass
+        .hasAccess(savedArticle.author.toString(), args.authorId);
+      if (savedArticle === null) throw new Error('Article does not exist');
+      if (!userCanDeleteArticle) throw new Error("You don't have write access");
+      const deletedArticle = await ArticleService.delete(args._id);
+      return { ...deletedArticle };
+    } catch (error) {
+      throw error;
+    }
   }
 };
 

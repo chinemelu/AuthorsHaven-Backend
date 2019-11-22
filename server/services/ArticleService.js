@@ -44,7 +44,7 @@ class ArticleService {
   }
 
   /**
-   * finds an article by Id
+   * updates an article by Id
     * @param {Object} identifier - property used to identify article
     * @param {Object} toBeUpdated - property to be updated
     * @returns {Object} updatedArticle
@@ -53,6 +53,23 @@ class ArticleService {
     try {
       const updatedArticle = await Article.updateOne(identifier, toBeUpdated);
       return updatedArticle;
+    } catch (error) {
+      Object.keys(error.errors).forEach((errorProperty) => {
+        const errorMessage = error.errors[errorProperty];
+        throw new Error(errorMessage);
+      });
+    }
+  }
+
+  /**
+   * deletes an article by Id
+    * @param {String} id - id property of article
+    * @returns {null} returns null
+    */
+  static async delete(id) {
+    try {
+      const deletedArticle = await Article.deleteOne({ _id: id });
+      return deletedArticle;
     } catch (error) {
       Object.keys(error.errors).forEach((errorProperty) => {
         const errorMessage = error.errors[errorProperty];

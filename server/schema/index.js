@@ -10,6 +10,7 @@ const schema = buildSchema(`
     loginUser(usernameOrEmail: String!, password: String!): User!
     createArticle(articleInput: ArticleInput): Article!
     updateArticle(articleInput: UpdateArticleInput): Article
+    deleteArticle(articleInput: DeleteArticleInput): Article
   }
 
   type Query {
@@ -64,6 +65,11 @@ const schema = buildSchema(`
     title: String
     body: String
     images: [String]
+  }
+
+  input DeleteArticleInput {
+    _id: ID!
+    authorId: String!
   }
 
   input UserInput {
