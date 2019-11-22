@@ -7,7 +7,7 @@ class ArticleService {
   /**
    * creates a new article
     * @param {Object} articleObject - the article object
-    * @returns {Object} savedArticle
+    * @returns {Object} createdArticle
     */
   static async create(articleObject) {
     try {
@@ -16,7 +16,24 @@ class ArticleService {
         body: articleObject.body || '',
         author: articleObject.authorId || ''
       });
-      const savedArticle = await article.save();
+      const createdArticle = await article.save();
+      return createdArticle;
+    } catch (error) {
+      Object.keys(error.errors).forEach((errorProperty) => {
+        const errorMessage = error.errors[errorProperty];
+        throw new Error(errorMessage);
+      });
+    }
+  }
+
+  /**
+   * finds an article by Id
+    * @param {String} id - the article id inputted by the user
+    * @returns {Object} savedArticle
+    */
+  static async findById(id) {
+    try {
+      const savedArticle = await Article.findById(id);
       return savedArticle;
     } catch (error) {
       Object.keys(error.errors).forEach((errorProperty) => {
@@ -28,13 +45,14 @@ class ArticleService {
 
   /**
    * finds an article by Id
-    * @param {Object} id - the article id inputted by the user
-    * @returns {Object} savedArticle
+    * @param {Object} identifier - property used to identify article
+    * @param {Object} toBeUpdated - property to be updated
+    * @returns {Object} updatedArticle
     */
-  static async findById(id) {
+  static async update(identifier, toBeUpdated) {
     try {
-      const savedArticle = await Article.findById(id);
-      return savedArticle;
+      const updatedArticle = await Article.updateOne(identifier, toBeUpdated);
+      return updatedArticle;
     } catch (error) {
       Object.keys(error.errors).forEach((errorProperty) => {
         const errorMessage = error.errors[errorProperty];
