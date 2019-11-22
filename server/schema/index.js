@@ -8,10 +8,14 @@ const schema = buildSchema(`
     sendResetPasswordEmail(email: String!): String
     resetUserPassword(password: String!, token: String! ): User
     loginUser(usernameOrEmail: String!, password: String!): User!
+    createArticle(articleInput: ArticleInput): Article!
+    updateArticle(articleInput: UpdateArticleInput): Article
+    deleteArticle(articleInput: DeleteArticleInput): Article
   }
 
   type Query {
     User(userQuery: UserInput): User
+    readArticle(id: ID!): Article
   }
 
   type Password {
@@ -32,6 +36,40 @@ const schema = buildSchema(`
     avatar: String
     createdAt: String
     updatedAt: String
+  }
+
+  type Article {
+    _id: ID
+    title: String
+    body: String
+    author: String
+    images: [String]
+    comments: [String]
+    meta: meta
+  }
+
+  type meta {
+    votes: Int
+    favs: Int
+  }
+
+  input ArticleInput {
+    title: String!
+    body: String!
+    authorId: String!
+  }
+
+  input UpdateArticleInput {
+    _id: ID
+    authorId: String
+    title: String
+    body: String
+    images: [String]
+  }
+
+  input DeleteArticleInput {
+    _id: ID!
+    authorId: String!
   }
 
   input UserInput {

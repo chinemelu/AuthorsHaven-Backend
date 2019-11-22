@@ -43,6 +43,15 @@ class UserHelperClass {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     return hashedPassword;
   }
+
+  /**
+  * @param {String} ownerId - owner of the resource database Id
+ * @param {String} requestUserId - person making the request
+ * @returns {Object} - Object containing details of decoded token
+ */
+  static async hasAccess(ownerId, requestUserId) {
+    return ownerId === requestUserId;
+  }
 }
 
 export default UserHelperClass;
