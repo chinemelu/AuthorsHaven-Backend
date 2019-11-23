@@ -60,6 +60,20 @@ class UserService {
   }
 
   /**
+   * checks if a user exists using an email
+    * @param {String} username - the username of a user
+    * @returns {Object} user object or empty object
+    */
+  static async findByUsername(username) {
+    try {
+      const user = await User.findOne({ username });
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
    * checks if a user exists using an id
     * @param {Object} identifier - the parameter used to identify the db entity
     * @param {Object} toBeUpdated - the parameter to be updated on the database

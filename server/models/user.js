@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
 import sanitizeInputData from '../helper/sanitizeInputData';
 import UserHelperClass from '../helper/UserHelperClass';
+import GeneralHelperClass from '../helper/GeneralHelperClass';
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -12,8 +13,7 @@ const userSchema = new mongoose.Schema({
     maxlength: [15, 'Username must not exceed 15 characters'],
     validate: {
       validator(username) {
-        const usernameValidationRegex = /^\w+$/;
-        return usernameValidationRegex.test(username);
+        return GeneralHelperClass.usernameValidation(username);
       },
       message: () => {
         const usernameValidationErrorMessage = 'Username can consist of only'

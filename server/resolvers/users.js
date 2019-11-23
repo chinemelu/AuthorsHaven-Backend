@@ -4,6 +4,8 @@ import TokenHelperClass from '../helper/TokenHelperClass';
 import EmailHelperClass from '../helper/EmailHelperClass';
 import UserHelperClass from '../helper/UserHelperClass';
 import constants from '../constants';
+import GeneralHelperClass from '../helper/GeneralHelperClass';
+import sanitizedInputData from '../helper/sanitizeInputData';
 
 /* eslint no-underscore-dangle: ["error", { "allow": ["_id", "_doc"] }] */
 
@@ -81,6 +83,19 @@ const UserResolver = {
         .isPasswordCorrect(args.password, savedUser.password);
       if (!isPasswordCorrect) throw new Error('Incorrect credentials');
       return { ...savedUser._doc, password: null, token };
+    } catch (error) {
+      throw error;
+    }
+  },
+  getUserProfile: async (args) => {
+    try {
+      const isUsernameValid = await GeneralHelperClass
+        .usernameValidation(args.username);
+      if (!isUsernameValid) throw new Error('Invalid username');
+      const sanitizedUsername = sanitizedInputData.username(args.username);
+      const savedUser = await UserService.findByUsername(sanitizedUsername);
+      if (savedUser === null) throw new Error('User does not exist');
+      return { ...savedUser._doc, password: null };
     } catch (error) {
       throw error;
     }
