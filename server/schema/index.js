@@ -54,14 +54,14 @@ const schema = buildSchema(`
   }
 
   input ArticleInput {
-    title: String!
-    body: String!
-    authorId: String!
+    title: String
+    token: String
+    body: String
   }
 
   input UpdateArticleInput {
     _id: ID
-    authorId: String
+    token: String!
     title: String
     body: String
     images: [String]
@@ -69,7 +69,7 @@ const schema = buildSchema(`
 
   input DeleteArticleInput {
     _id: ID!
-    authorId: String!
+    token: String
   }
 
   input UserInput {

@@ -2,6 +2,7 @@ import ArticleService from '../services/ArticleService';
 import UserService from '../services/UserService';
 import GeneralHelperClass from '../helper/GeneralHelperClass';
 import UserHelperClass from '../helper/UserHelperClass';
+import TokenHelperClass from '../helper/TokenHelperClass';
 
 
 /* eslint no-underscore-dangle: ["error", { "allow": ["_id", "_doc"] }] */
@@ -13,15 +14,19 @@ const ArticleResolver = {
   createArticle: async (args) => {
     try {
       args = args.articleInput;
-      const savedUser = await UserService.findById(args.authorId);
-      const isIdValid = GeneralHelperClass.isIdValid(args.authorId);
-      if (!args.authorId) throw new Error('AuthorId is required');
+      if (!args.token) throw new Error('No token provided');
+      const isTokenValid = TokenHelperClass.verifyToken(args.token);
+      if (isTokenValid.error) throw new Error('Invalid token');
+      const { userId } = isTokenValid.decodedToken;
+      const savedUser = await UserService
+        .findById(userId);
+      const isIdValid = GeneralHelperClass.isIdValid(userId);
       if (!isIdValid) throw new Error('Invalid authorId');
       if (savedUser === null) throw new Error('User does not exist');
       const newArticle = await ArticleService.create({
         title: args.title,
         body: args.body,
-        authorId: args.authorId
+        authorId: userId
       });
       return { ...newArticle._doc };
     } catch (error) {
@@ -43,24 +48,26 @@ const ArticleResolver = {
   updateArticle: async (args) => {
     try {
       args = args.articleInput;
-      const savedUser = await UserService.findById(args.authorId);
-      const isAuthorIdValid = GeneralHelperClass.isIdValid(args.authorId);
+      if (!args.token) throw new Error('No token provided');
+      const isTokenValid = TokenHelperClass.verifyToken(args.token);
+      if (isTokenValid.error) throw new Error('Invalid token');
+      const { userId } = isTokenValid.decodedToken;
+      const savedUser = await UserService.findById(userId);
+      const isAuthorIdValid = GeneralHelperClass.isIdValid(userId);
       const isArticleIdValid = GeneralHelperClass.isIdValid(args._id);
       const savedArticle = await ArticleService.findById(args._id);
-      if (!args.authorId) throw new Error('AuthorId is required');
       if (!isAuthorIdValid) throw new Error('Invalid authorId');
       if (!isArticleIdValid) throw new Error('Article Id is invalid');
       if (savedUser === null) throw new Error('User does not exist');
-      const userCanUpdateArticle = await UserHelperClass
-        .hasAccess(savedArticle.author.toString(), args.authorId);
       if (savedArticle === null) throw new Error('Article does not exist');
+      const userCanUpdateArticle = await UserHelperClass
+        .hasAccess(savedArticle.author.toString(), userId);
       if (!userCanUpdateArticle) throw new Error("You don't have write access");
-      const updatedArticle = await ArticleService.update({ _id: args._id }, {
+      await ArticleService.update({ _id: args._id }, {
         title: args.title || savedArticle.title,
         body: args.body || savedArticle.body,
         images: args.images || savedArticle.images
       });
-      return { ...updatedArticle };
     } catch (error) {
       throw error;
     }
@@ -68,20 +75,22 @@ const ArticleResolver = {
   deleteArticle: async (args) => {
     try {
       args = args.articleInput;
-      const savedUser = await UserService.findById(args.authorId);
-      const isAuthorIdValid = GeneralHelperClass.isIdValid(args.authorId);
+      if (!args.token) throw new Error('No token provided');
+      const isTokenValid = TokenHelperClass.verifyToken(args.token);
+      if (isTokenValid.error) throw new Error('Invalid token');
+      const { userId } = isTokenValid.decodedToken;
+      const savedUser = await UserService.findById(userId);
+      const isAuthorIdValid = GeneralHelperClass.isIdValid(userId);
       const isArticleIdValid = GeneralHelperClass.isIdValid(args._id);
       const savedArticle = await ArticleService.findById(args._id);
-      if (!args.authorId) throw new Error('AuthorId is required');
       if (!isAuthorIdValid) throw new Error('Invalid authorId');
       if (!isArticleIdValid) throw new Error('Article Id is invalid');
       if (savedUser === null) throw new Error('User does not exist');
-      const userCanDeleteArticle = await UserHelperClass
-        .hasAccess(savedArticle.author.toString(), args.authorId);
       if (savedArticle === null) throw new Error('Article does not exist');
+      const userCanDeleteArticle = await UserHelperClass
+        .hasAccess(savedArticle.author.toString(), userId);
       if (!userCanDeleteArticle) throw new Error("You don't have write access");
-      const deletedArticle = await ArticleService.delete(args._id);
-      return { ...deletedArticle };
+      await ArticleService.delete(args._id);
     } catch (error) {
       throw error;
     }
