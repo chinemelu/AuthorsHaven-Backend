@@ -16,6 +16,7 @@ const schema = buildSchema(`
   type Query {
     User(userQuery: UserInput): User
     readArticle(id: ID!): Article
+    getUserProfile(username: String!): User
   }
 
   type Password {
