@@ -77,6 +77,18 @@ class ArticleService {
       });
     }
   }
+
+  /**
+   * finds and updates an article by Id
+    * @param {String} id - id property of article
+    * @param {Object} fieldObjectToBeUpdated - the field to be updated
+    * @returns {null} returns null
+    */
+  static async findOneAndUpdate(id, fieldObjectToBeUpdated) {
+    const updatedArticle = await Article.findOneAndUpdate({ _id: id },
+      { $push: fieldObjectToBeUpdated });
+    return updatedArticle;
+  }
 }
 
 export default ArticleService;

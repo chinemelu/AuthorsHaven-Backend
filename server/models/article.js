@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+const { ObjectId } = mongoose.Types;
+
 const articleSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -18,6 +20,11 @@ const articleSchema = new mongoose.Schema({
     required: [true, 'Article body is required']
   },
   comments: [{
+    _id: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: new ObjectId(),
+      required: true
+    },
     body: String,
     author: {
       type: mongoose.Schema.Types.ObjectId,

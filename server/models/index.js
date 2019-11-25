@@ -7,7 +7,7 @@ dotenv.config();
 const models = { User };
 
 export const connectToDb = () => mongoose.connect(process.env.DATABASE_URL,
-  { useNewUrlParser: true });
+  { useNewUrlParser: true, useFindAndModify: false });
 
 
 export default models;

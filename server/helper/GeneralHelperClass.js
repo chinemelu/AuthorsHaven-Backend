@@ -20,6 +20,15 @@ class GeneralHelperClass {
     const usernameValidationRegex = /^\w+$/;
     return usernameValidationRegex.test(username);
   }
+
+  /**
+   * @param {String} id - id to be converted
+   * @returns {Object} - converted id
+   */
+  static convertIdStringToObjectId(id) {
+    const { ObjectId } = mongoose.Types;
+    return new ObjectId(id);
+  }
 }
 
 export default GeneralHelperClass;
