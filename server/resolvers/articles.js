@@ -104,6 +104,7 @@ const ArticleResolver = {
       const { userId } = isTokenValid.decodedToken;
       const savedUser = await UserService.findById(userId);
       const isAuthorIdValid = GeneralHelperClass.isIdValid(userId);
+      if (!args.articleId) throw new Error('Article Id is required');
       const isArticleIdValid = GeneralHelperClass.isIdValid(args.articleId);
       const savedArticle = await ArticleService.findById(args.articleId);
       if (!isAuthorIdValid) throw new Error('Invalid authorId');
@@ -117,6 +118,31 @@ const ArticleResolver = {
       };
       const addedComment = await CommentService.create(commentObject);
       return addedComment[0];
+    } catch (error) {
+      throw error;
+    }
+  },
+  addReply: async (args) => {
+    try {
+      args = args.replyInput;
+      if (!args.token) throw new Error('No token provided');
+      const isTokenValid = TokenHelperClass.verifyToken(args.token);
+      if (isTokenValid.error) throw new Error('Invalid token');
+      const { userId } = isTokenValid.decodedToken;
+      const savedUser = await UserService.findById(userId);
+      const isAuthorIdValid = GeneralHelperClass.isIdValid(userId);
+      if (!args.commentId) throw new Error('Comment Id is required');
+      const savedComment = await CommentService.findCommentById(args.commentId);
+      if (!isAuthorIdValid) throw new Error('Invalid authorId');
+      if (savedUser === null) throw new Error('User does not exist');
+      if (savedComment === null) throw new Error('Comment does not exist');
+      const replyObject = {
+        body: args.replyBody,
+        author: userId,
+        commentId: args.commentId
+      };
+      const addedReply = await CommentService.createReply(replyObject);
+      return addedReply[0];
     } catch (error) {
       throw error;
     }

@@ -6,12 +6,6 @@ const replySchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  articleId: {
-    type: mongoose.ObjectId,
-    get: v => v.toString(),
-    ref: 'Article',
-    required: true
-  },
   commentId: {
     type: mongoose.ObjectId,
     ref: 'Comment',

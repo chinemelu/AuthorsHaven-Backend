@@ -18,10 +18,12 @@ const commentSchema = new mongoose.Schema({
     required: [true, 'Comment is required']
   },
   replies: [{
-    type: mongoose.Schema.Types.ObjectId,
-    get: v => v.toString(),
-    ref: 'Reply',
-    required: true
+    _id: {
+      type: mongoose.Schema.Types.ObjectId,
+      get: v => v.toString(),
+      ref: 'Reply',
+      required: true
+    }
   }]
 },
 {

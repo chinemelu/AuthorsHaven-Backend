@@ -12,6 +12,7 @@ const schema = buildSchema(`
     updateArticle(articleInput: UpdateArticleInput): Article
     deleteArticle(articleInput: DeleteArticleInput): Article
     addComment(commentInput: commentInput): Comments!
+    addReply(replyInput: replyInput): Comments!
   }
 
   type Query {
@@ -77,6 +78,13 @@ const schema = buildSchema(`
     token: String
     articleId: ID
   }
+
+  input replyInput {
+    replyBody: String
+    token: String
+    commentId: ID
+  }
+
 
   input UpdateArticleInput {
     _id: ID
