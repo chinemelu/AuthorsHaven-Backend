@@ -1,6 +1,6 @@
 import express from 'express';
 import graphqlHTTP from 'express-graphql';
-import { connectToDb } from './models';
+import client from './models';
 import EmailHelperClass from './helper/EmailHelperClass';
 import UserHelperClass from './helper/UserHelperClass';
 import schema from './schema';
@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 const connectToServer = async () => {
-  const applicationServer = await connectToDb();
+  const applicationServer = await client();
   if (applicationServer) {
     app.listen(process.env.PORT || 3000, () => {
       console.log('listening on port 3000');
