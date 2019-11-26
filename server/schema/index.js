@@ -11,7 +11,7 @@ const schema = buildSchema(`
     createArticle(articleInput: ArticleInput): Article!
     updateArticle(articleInput: UpdateArticleInput): Article
     deleteArticle(articleInput: DeleteArticleInput): Article
-    addComment(commentInput: commentInput): Article!
+    addComment(commentInput: commentInput): Comments!
   }
 
   type Query {
@@ -48,15 +48,17 @@ const schema = buildSchema(`
     images: [String]
     createdAt: String
     updatedAt: String
-    comments: [comments!]
+    comments: [Comments!]!
     meta: meta
   }
 
-  type comments {
+  type Comments {
     _id: ID
-    body: String
-    author: ID!
-    date: String
+    articleId: ID
+    body: String!
+    author: ID
+    createdAt: String
+    updatedAt: String
   }
 
   type meta {

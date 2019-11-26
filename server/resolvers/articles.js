@@ -1,10 +1,9 @@
 import ArticleService from '../services/ArticleService';
+import CommentService from '../services/CommentService';
 import UserService from '../services/UserService';
 import GeneralHelperClass from '../helper/GeneralHelperClass';
 import UserHelperClass from '../helper/UserHelperClass';
 import TokenHelperClass from '../helper/TokenHelperClass';
-import Article from '../models/article';
-
 
 /* eslint no-underscore-dangle: ["error", { "allow": ["_id", "_doc"] }] */
 
@@ -111,15 +110,13 @@ const ArticleResolver = {
       if (!isArticleIdValid) throw new Error('Article Id is invalid');
       if (savedUser === null) throw new Error('User does not exist');
       if (savedArticle === null) throw new Error('Article does not exist');
-      if (!args.commentBody) throw new Error('Please enter comment');
-
-      const comments = {
+      const commentObject = {
+        articleId: args.articleId,
         body: args.commentBody,
-        author: GeneralHelperClass.convertIdStringToObjectId(userId)
+        author: userId
       };
-      const addedComment = await ArticleService
-        .findOneAndUpdate(args.articleId, { comments });
-      return { ...addedComment._doc };
+      const addedComment = await CommentService.create(commentObject);
+      return addedComment[0];
     } catch (error) {
       throw error;
     }

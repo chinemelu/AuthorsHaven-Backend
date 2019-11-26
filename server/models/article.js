@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
 
-const { ObjectId } = mongoose.Types;
-
 const articleSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -9,6 +7,7 @@ const articleSchema = new mongoose.Schema({
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,
+    get: v => v.toString(),
     ref: 'User',
     required: true
   },
@@ -22,29 +21,10 @@ const articleSchema = new mongoose.Schema({
   comments: [{
     _id: {
       type: mongoose.Schema.Types.ObjectId,
-      default: new ObjectId(),
-      required: true
-    },
-    body: String,
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    },
-    date: {
-      type: Date,
-      default: Date.now
-    },
-    replies: [{
-      type: String,
-      author: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-      },
-      date: {
-        type: Date,
-        default: Date.now
-      }
-    }]
+      get: v => v.toString(),
+      required: true,
+      ref: 'Comment'
+    }
   }],
   meta: {
     votes: Number,
