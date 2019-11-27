@@ -33,7 +33,16 @@ class ArticleService {
     */
   static async findById(id) {
     try {
-      const savedArticle = await Article.findById(id);
+      const savedArticle = await Article.findById(id)
+        .populate(
+          {
+            path: 'comments',
+            model: 'Comment',
+            populate: {
+              path: 'replies'
+            }
+          }
+        );
       return savedArticle;
     } catch (error) {
       Object.keys(error.errors).forEach((errorProperty) => {
@@ -85,9 +94,13 @@ class ArticleService {
     * @returns {null} returns null
     */
   static async findOneAndUpdate(id, fieldObjectToBeUpdated) {
-    const updatedArticle = await Article.findOneAndUpdate({ _id: id },
-      { $push: fieldObjectToBeUpdated });
-    return updatedArticle;
+    try {
+      const updatedArticle = await Article.findOneAndUpdate({ _id: id },
+        { $push: fieldObjectToBeUpdated });
+      return updatedArticle;
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

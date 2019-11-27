@@ -2,12 +2,12 @@ import mongoose from 'mongoose';
 
 const replySchema = new mongoose.Schema({
   author: {
-    type: mongoose.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
   commentId: {
-    type: mongoose.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Comment',
     required: true
   },

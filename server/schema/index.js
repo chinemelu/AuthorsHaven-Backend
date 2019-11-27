@@ -58,8 +58,16 @@ const schema = buildSchema(`
     articleId: ID
     body: String!
     author: ID
+    replies: [Replies]
     createdAt: String
     updatedAt: String
+  }
+
+  type Replies {
+    _id: ID
+    commentId: ID
+    author: ID
+    body: String
   }
 
   type meta {
@@ -85,12 +93,11 @@ const schema = buildSchema(`
     commentId: ID
   }
 
-
   input UpdateArticleInput {
     _id: ID
     token: String!
-    title: String
-    body: String
+    title: String!
+    body: String!
     images: [String]
   }
 

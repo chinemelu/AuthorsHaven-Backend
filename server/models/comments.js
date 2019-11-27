@@ -3,13 +3,11 @@ import mongoose from 'mongoose';
 const commentSchema = new mongoose.Schema({
   author: {
     type: mongoose.Schema.Types.ObjectId,
-    get: v => v.toString(),
     ref: 'User',
     required: true
   },
   articleId: {
     type: mongoose.Schema.Types.ObjectId,
-    get: v => v.toString(),
     ref: 'Article',
     required: true
   },
@@ -18,12 +16,9 @@ const commentSchema = new mongoose.Schema({
     required: [true, 'Comment is required']
   },
   replies: [{
-    _id: {
-      type: mongoose.Schema.Types.ObjectId,
-      get: v => v.toString(),
-      ref: 'Reply',
-      required: true
-    }
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Reply',
+    required: true
   }]
 },
 {
