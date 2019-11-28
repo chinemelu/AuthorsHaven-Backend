@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
 import sanitizeInputData from '../helper/sanitizeInputData';
-import UserHelperClass from '../helper/UserHelperClass';
 import GeneralHelperClass from '../helper/GeneralHelperClass';
 
 const userSchema = new mongoose.Schema({
@@ -73,7 +72,7 @@ userSchema.pre('validate', function preValidation() {
 
 userSchema.post('validate', async function passwordHash() {
   try {
-    this._doc.password = await UserHelperClass
+    this._doc.password = await GeneralHelperClass
       .encryptPassword(this._doc.password);
   } catch (err) {
     throw err;

@@ -7,7 +7,6 @@ const articleSchema = new mongoose.Schema({
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,
-    get: v => v.toString(),
     ref: 'User',
     required: true
   },
@@ -19,12 +18,9 @@ const articleSchema = new mongoose.Schema({
     required: [true, 'Article body is required']
   },
   comments: [{
-    _id: {
-      type: mongoose.Schema.Types.ObjectId,
-      get: v => v.toString(),
-      required: true,
-      ref: 'Comment'
-    }
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Comment'
   }],
   meta: {
     votes: Number,

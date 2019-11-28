@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt';
 import TokenHelperClass from './TokenHelperClass';
 import ResponseHandler from './ResponseHandler';
+import UserService from '../services/UserService';
+
 
 /**
  * Helper class for all things relating to users
@@ -34,23 +36,22 @@ class UserHelperClass {
   }
 
   /**
-  * @param {String} password - password to be hashed
- * @param {String} saltRounds - cost factor for hashing password
- * @returns {Object} - Object containing details of decoded token
- */
-  static async encryptPassword(password) {
-    const saltRounds = 8;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    return hashedPassword;
-  }
-
-  /**
   * @param {String} ownerId - owner of the resource database Id
  * @param {String} requestUserId - person making the request
  * @returns {Object} - Object containing details of decoded token
  */
   static async hasAccess(ownerId, requestUserId) {
     return ownerId === requestUserId;
+  }
+
+  /**
+  * @param {String} userId - id of user to be validated
+ * @returns {null} - null
+ */
+  static async validateUser(userId) {
+    const savedUser = await UserService
+      .findById(userId);
+    if (savedUser === null) throw new Error('User does not exist');
   }
 }
 

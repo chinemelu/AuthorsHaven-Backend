@@ -1,5 +1,6 @@
 import Comment from '../models/comments';
 import Reply from '../models/reply';
+import ReplyService from './ReplyService';
 import ArticleService from './ArticleService';
 
 /* eslint no-underscore-dangle:
@@ -24,7 +25,7 @@ class CommentService {
       const createdComment = await Comment.create([{
         body: commentObject.body,
         author: commentObject.author,
-        articleId: commentObject.articleId
+        article: commentObject.articleId
       }], { session });
       const comments = {
         _id: createdComment[0]._id,
@@ -42,7 +43,7 @@ class CommentService {
   }
 
   /**
-   * finds reply by id
+   * finds comment by id
     * @param {String} id - the id of the comment
     * @returns {null} returns null
     */
@@ -62,9 +63,12 @@ class CommentService {
     * @returns {null} returns null
     */
   static async findOneAndUpdate(id, fieldObjectToBeUpdated) {
-    const updatedComment = await Comment.findOneAndUpdate({ _id: id },
-      { $push: fieldObjectToBeUpdated });
-    return updatedComment;
+    try {
+      await Comment.findOneAndUpdate({ _id: id },
+        { $push: fieldObjectToBeUpdated });
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
@@ -72,7 +76,7 @@ class CommentService {
     * @param {Object} replyObject - the object containing reply parameters
     * @returns {Object} returns created reply
     */
-  static async createReply(replyObject) {
+  static async replyToComment(replyObject) {
     let session = null;
     try {
       await Reply.createCollection();
@@ -82,13 +86,47 @@ class CommentService {
       const createdReply = await Reply.create([{
         body: replyObject.body,
         author: replyObject.author,
-        commentId: replyObject.commentId
+        comment: replyObject.commentId,
+        article: replyObject.articleId
       }], { session });
       const reply = {
         _id: createdReply[0]._id,
       };
       await CommentService
         .findOneAndUpdate(replyObject.commentId, { replies: reply });
+      await session.commitTransaction();
+      session.endSession();
+      return createdReply;
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      throw new Error(error.errors.body.message);
+    }
+  }
+
+  /**
+   * creates reply
+    * @param {Object} replyObject - the object containing reply parameters
+    * @returns {Object} returns created reply
+    */
+  static async replyToReply(replyObject) {
+    let session = null;
+    try {
+      await Reply.createCollection();
+      const _session = await Reply.startSession();
+      session = _session;
+      session.startTransaction();
+      const createdReply = await Reply.create([{
+        body: replyObject.body,
+        author: replyObject.author,
+        comment: replyObject.replyId,
+        article: replyObject.articleId
+      }], { session });
+      const reply = {
+        _id: createdReply[0]._id,
+      };
+      await ReplyService
+        .findOneAndUpdate(replyObject.replyId, { replies: reply });
       await session.commitTransaction();
       session.endSession();
       return createdReply;

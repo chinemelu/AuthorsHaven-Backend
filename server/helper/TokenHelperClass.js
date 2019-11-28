@@ -31,6 +31,17 @@ class TokenHelperClass {
       throw err;
     }
   }
+
+  /**
+ * @param {String} token - the token to be validated
+ * @returns {String} the token
+ */
+  static validateToken(token) {
+    if (!token) throw new Error('No token provided');
+    const isTokenValid = TokenHelperClass.verifyToken(token);
+    if (isTokenValid.error) throw new Error('Invalid token');
+    return isTokenValid;
+  }
 }
 
 export default TokenHelperClass;

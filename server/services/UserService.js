@@ -1,4 +1,5 @@
 import User from '../models/user';
+import GeneralHelperClass from '../helper/GeneralHelperClass';
 
 /**
  * it handles all database calls with respect to a user
@@ -12,19 +13,16 @@ class UserService {
   static async create(userObject) {
     try {
       const user = new User({
-        username: userObject.username || '',
-        firstname: userObject.firstname || '',
-        lastname: userObject.lastname || '',
-        password: userObject.password || '',
-        email: userObject.email || ''
+        username: userObject.username,
+        firstname: userObject.firstname,
+        lastname: userObject.lastname,
+        password: userObject.password,
+        email: userObject.email
       });
       const savedUser = await user.save();
       return savedUser;
     } catch (error) {
-      Object.keys(error.errors).forEach((errorProperty) => {
-        const errorMessage = error.errors[errorProperty];
-        throw new Error(errorMessage);
-      });
+      GeneralHelperClass.handleModelValidationErrors(error);
     }
   }
 
@@ -38,7 +36,7 @@ class UserService {
       const user = await User.findById(id);
       return user;
     } catch (error) {
-      return 'Database error';
+      throw error;
     }
   }
 

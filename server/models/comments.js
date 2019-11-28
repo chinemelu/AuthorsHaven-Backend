@@ -3,27 +3,22 @@ import mongoose from 'mongoose';
 const commentSchema = new mongoose.Schema({
   author: {
     type: mongoose.Schema.Types.ObjectId,
-    get: v => v.toString(),
     ref: 'User',
     required: true
   },
-  articleId: {
+  article: {
     type: mongoose.Schema.Types.ObjectId,
-    get: v => v.toString(),
     ref: 'Article',
     required: true
   },
   body: {
     type: String,
-    required: [true, 'Comment is required']
+    required: true
   },
   replies: [{
-    _id: {
-      type: mongoose.Schema.Types.ObjectId,
-      get: v => v.toString(),
-      ref: 'Reply',
-      required: true
-    }
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Reply',
+    required: true
   }]
 },
 {
