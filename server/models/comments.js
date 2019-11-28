@@ -6,14 +6,14 @@ const commentSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  articleId: {
+  article: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Article',
     required: true
   },
   body: {
     type: String,
-    required: [true, 'Comment is required']
+    required: true
   },
   replies: [{
     type: mongoose.Schema.Types.ObjectId,

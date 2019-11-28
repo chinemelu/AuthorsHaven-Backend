@@ -86,19 +86,41 @@ const ArticleResolver = {
       throw error;
     }
   },
-  addReply: async (args) => {
+  addReplyToComment: async (args) => {
     try {
       args = args.replyInput;
       const isTokenValid = TokenHelperClass.validateToken(args.token);
       const { userId } = isTokenValid.decodedToken;
+      await ArticleHelperClass.validateArticle(args.articleId);
       await ArticleHelperClass.validateComment(args.commentId);
       await UserHelperClass.validateUser(userId);
       const replyObject = {
         body: args.replyBody,
         author: userId,
-        commentId: args.commentId
+        commentId: args.commentId,
+        articleId: args.articleId
       };
-      const addedReply = await CommentService.createReply(replyObject);
+      const addedReply = await CommentService.replyToComment(replyObject);
+      return addedReply[0];
+    } catch (error) {
+      throw error;
+    }
+  },
+  addReplyToReply: async (args) => {
+    try {
+      args = args.replyInput;
+      const isTokenValid = TokenHelperClass.validateToken(args.token);
+      const { userId } = isTokenValid.decodedToken;
+      await ArticleHelperClass.validateArticle(args.articleId);
+      await ArticleHelperClass.validateReply(args.replyId);
+      await UserHelperClass.validateUser(userId);
+      const replyObject = {
+        body: args.replyBody,
+        author: userId,
+        replyId: args.replyId,
+        articleId: args.articleId
+      };
+      const addedReply = await CommentService.replyToReply(replyObject);
       return addedReply[0];
     } catch (error) {
       throw error;

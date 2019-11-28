@@ -1,6 +1,7 @@
 import ArticleService from '../services/ArticleService';
 import CommentService from '../services/CommentService';
 import GeneralHelperClass from './GeneralHelperClass';
+import ReplyService from '../services/ReplyService';
 
 
 /**
@@ -31,6 +32,22 @@ class ArticleHelperClass {
       if (!isIdValid) throw new Error('Invalid commentId');
       const savedComment = await CommentService.findCommentById(commentId);
       if (savedComment === null) throw new Error('Comment does not exist');
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+ * @param {String} replyId - the id of the reply to be validated
+ * @returns {null} the token
+ */
+  static async validateReply(replyId) {
+    try {
+      if (!replyId) throw new Error('ReplyId is required');
+      const isIdValid = GeneralHelperClass.isIdValid(replyId);
+      if (!isIdValid) throw new Error('Invalid replyId');
+      const savedReply = await ReplyService.findReplyById(replyId);
+      if (savedReply === null) throw new Error('Reply does not exist');
     } catch (error) {
       throw error;
     }

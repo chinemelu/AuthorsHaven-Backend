@@ -1,4 +1,5 @@
 import Article from '../models/article';
+import GeneralHelperClass from '../helper/GeneralHelperClass';
 
 /**
  * it handles all database calls with respect to an article
@@ -12,17 +13,14 @@ class ArticleService {
   static async create(articleObject) {
     try {
       const article = new Article({
-        title: articleObject.title || '',
-        body: articleObject.body || '',
-        author: articleObject.authorId || ''
+        title: articleObject.title,
+        body: articleObject.body,
+        author: articleObject.authorId
       });
       const createdArticle = await article.save();
       return createdArticle;
     } catch (error) {
-      Object.keys(error.errors).forEach((errorProperty) => {
-        const errorMessage = error.errors[errorProperty];
-        throw new Error(errorMessage);
-      });
+      GeneralHelperClass.handleModelValidationErrors(error);
     }
   }
 
@@ -39,16 +37,16 @@ class ArticleService {
             path: 'comments',
             model: 'Comment',
             populate: {
-              path: 'replies'
+              path: 'replies',
+              populate: {
+                path: 'replies'
+              }
             }
           }
         );
       return savedArticle;
     } catch (error) {
-      Object.keys(error.errors).forEach((errorProperty) => {
-        const errorMessage = error.errors[errorProperty];
-        throw new Error(errorMessage);
-      });
+      throw error;
     }
   }
 
@@ -60,13 +58,9 @@ class ArticleService {
     */
   static async update(identifier, toBeUpdated) {
     try {
-      const updatedArticle = await Article.updateOne(identifier, toBeUpdated);
-      return updatedArticle;
+      await Article.updateOne(identifier, toBeUpdated);
     } catch (error) {
-      Object.keys(error.errors).forEach((errorProperty) => {
-        const errorMessage = error.errors[errorProperty];
-        throw new Error(errorMessage);
-      });
+      throw error;
     }
   }
 
@@ -77,13 +71,9 @@ class ArticleService {
     */
   static async delete(id) {
     try {
-      const deletedArticle = await Article.deleteOne({ _id: id });
-      return deletedArticle;
+      await Article.deleteOne({ _id: id });
     } catch (error) {
-      Object.keys(error.errors).forEach((errorProperty) => {
-        const errorMessage = error.errors[errorProperty];
-        throw new Error(errorMessage);
-      });
+      throw error;
     }
   }
 
@@ -95,9 +85,8 @@ class ArticleService {
     */
   static async findOneAndUpdate(id, fieldObjectToBeUpdated) {
     try {
-      const updatedArticle = await Article.findOneAndUpdate({ _id: id },
+      await Article.findOneAndUpdate({ _id: id },
         { $push: fieldObjectToBeUpdated });
-      return updatedArticle;
     } catch (error) {
       throw error;
     }

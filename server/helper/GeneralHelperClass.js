@@ -42,6 +42,17 @@ class GeneralHelperClass {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     return hashedPassword;
   }
+
+  /**
+  * @param {Object} error - error from model validation
+ * @returns {null} - No value is returned
+ */
+  static handleModelValidationErrors(error) {
+    return Object.keys(error.errors).forEach((errorProperty) => {
+      const errorMessage = error.errors[errorProperty];
+      throw new Error(errorMessage);
+    });
+  }
 }
 
 export default GeneralHelperClass;

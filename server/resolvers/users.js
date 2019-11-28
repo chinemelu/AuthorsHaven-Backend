@@ -21,7 +21,7 @@ const UserResolver = {
   signupUser: async (args) => {
     try {
       const savedUser = await UserService.create(args.userSignupInput);
-      const token = TokenHelperClass.createToken(savedUser._id, '12h');
+      const token = TokenHelperClass.createToken(savedUser._id, '72h');
       await UserProfileService.create(args.userProfileInput, savedUser._id);
       EmailHelperClass.sendEmail(
         savedUser._doc.email,
@@ -78,7 +78,7 @@ const UserResolver = {
       if (savedUser === null) {
         throw new Error('Incorrect credentials');
       }
-      const token = TokenHelperClass.createToken(savedUser._id, '12h');
+      const token = TokenHelperClass.createToken(savedUser._id, '72h');
       const isPasswordCorrect = await UserHelperClass
         .isPasswordCorrect(args.password, savedUser.password);
       if (!isPasswordCorrect) throw new Error('Incorrect credentials');
