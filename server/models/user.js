@@ -49,6 +49,11 @@ const userSchema = new mongoose.Schema({
   isVerified: {
     type: Boolean,
     default: false
+  },
+  profile: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Profile',
+    default() { return new mongoose.Types.ObjectId(); }
   }
 },
 {

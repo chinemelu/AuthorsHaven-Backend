@@ -2,6 +2,8 @@ import bcrypt from 'bcrypt';
 import TokenHelperClass from './TokenHelperClass';
 import ResponseHandler from './ResponseHandler';
 import UserService from '../services/UserService';
+import GeneralService from '../services/GeneralService';
+import Follower from '../models/follower';
 
 
 /**
@@ -46,12 +48,31 @@ class UserHelperClass {
 
   /**
   * @param {String} userId - id of user to be validated
+  * @param {String} message - optional message
  * @returns {null} - null
  */
-  static async validateUser(userId) {
+  static async validateUser(userId, message) {
     const savedUser = await UserService
       .findById(userId);
-    if (savedUser === null) throw new Error('User does not exist');
+    if (savedUser === null) throw new Error(message || 'User does not exist');
+  }
+
+  /**
+  * @param {String} userBeingFollowedId - id of user being followed
+  * @param {String} followerId - id of follower
+ * @returns {null} - null
+ */
+  static async validateFollower(userBeingFollowedId, followerId) {
+    const existingFollowing = await GeneralService.findOne(Follower, ({
+      $and: [{ follower: followerId },
+        { userBeingFollowed: userBeingFollowedId }]
+    }));
+    if (existingFollowing) {
+      throw new Error('You are already following this user');
+    }
+    if (userBeingFollowedId === followerId) {
+      throw new Error('You cannot follow yourself');
+    }
   }
 }
 
