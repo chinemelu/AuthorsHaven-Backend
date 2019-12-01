@@ -1,4 +1,5 @@
 import UserService from '../services/UserService';
+import FollowerService from '../services/FollowerService';
 import UserProfileService from '../services/UserProfileService';
 import TokenHelperClass from '../helper/TokenHelperClass';
 import EmailHelperClass from '../helper/EmailHelperClass';
@@ -22,7 +23,7 @@ const UserResolver = {
     try {
       const savedUser = await UserService.create(args.userSignupInput);
       const token = TokenHelperClass.createToken(savedUser._id, '72h');
-      await UserProfileService.create(args.userProfileInput, savedUser._id);
+      await UserProfileService.create(args.userProfileInput, savedUser);
       EmailHelperClass.sendEmail(
         savedUser._doc.email,
         process.env.EMAIL_SENDER,
@@ -99,6 +100,34 @@ const UserResolver = {
     } catch (error) {
       throw error;
     }
+  },
+  followUser: async (args) => {
+    args = args.followInput;
+    const userId = await UserHelperClass.validateUser(args.token);
+    await UserHelperClass
+      .validateUser(null, args.userId,
+        'The user you are trying to follow does not exist');
+    await UserHelperClass
+      .validateFollower(args.userId, userId, 'follow');
+    const followerObject = {
+      follower: userId,
+      userBeingFollowed: args.userId
+    };
+    await FollowerService.create(followerObject);
+  },
+  unfollowUser: async (args) => {
+    args = args.followInput;
+    const userId = await UserHelperClass.validateUser(args.token);
+    await UserHelperClass
+      .validateUser(null, args.userId,
+        'The user you are trying to unfollow does not exist');
+    await UserHelperClass
+      .validateFollower(args.userId, userId, 'unfollow');
+    const followerObject = {
+      follower: userId,
+      userBeingFollowed: args.userId
+    };
+    await FollowerService.delete(followerObject);
   }
 };
 

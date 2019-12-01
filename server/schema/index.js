@@ -14,6 +14,8 @@ const schema = buildSchema(`
     addComment(commentInput: commentInput): Comments!
     addReplyToComment(replyInput: replyInput): Comments!
     addReplyToReply(replyInput: replyToReplyInput): Comments!
+    followUser(followInput: followUser): User
+    unfollowUser(followInput: followUser): User
   }
 
   type Query {
@@ -34,12 +36,18 @@ const schema = buildSchema(`
     firstname: String
     lastname: String
     email: String!
-    password: String
     isVerified: Boolean
-    bio: String
-    avatar: String
+    profile: Profile
     createdAt: String
     updatedAt: String
+  }
+
+  type Profile {
+    _id: ID
+    avatar: String
+    bio: String
+    owner: ID!
+    followers: [User]
   }
 
   type Article {
@@ -76,6 +84,11 @@ const schema = buildSchema(`
   type meta {
     votes: Int
     favs: Int
+  }
+
+  input followUser {
+    token: String!
+    userId: ID!
   }
 
   input ArticleInput {

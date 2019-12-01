@@ -64,7 +64,16 @@ class UserService {
     */
   static async findByUsername(username) {
     try {
-      const user = await User.findOne({ username });
+      const user = await User.findOne({ username })
+        .populate(
+          {
+            path: 'profile',
+            model: 'Profile',
+            populate: {
+              path: 'followers',
+            }
+          }
+        );
       return user;
     } catch (error) {
       throw error;

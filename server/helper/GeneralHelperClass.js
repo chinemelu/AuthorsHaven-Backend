@@ -53,6 +53,16 @@ class GeneralHelperClass {
       throw new Error(errorMessage);
     });
   }
+
+//   /**
+//   * @param {Object} error - error from model validation
+//  * @returns {null} - No value is returned
+//  */
+//   static async validateTokenAndUser(token) {
+//     const isTokenValid = TokenHelperClass.validateToken(token);
+//     const { userId } = isTokenValid.decodedToken;
+//     await UserHelperClass.validateUser(userId);
+//   }
 }
 
 export default GeneralHelperClass;
