@@ -15,6 +15,7 @@ const schema = buildSchema(`
     addReplyToComment(replyInput: replyInput): Comments!
     addReplyToReply(replyInput: replyToReplyInput): Comments!
     followUser(followInput: followUser): User
+    unfollowUser(followInput: followUser): User
   }
 
   type Query {

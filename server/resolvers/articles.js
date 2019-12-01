@@ -1,7 +1,6 @@
 import ArticleService from '../services/ArticleService';
 import CommentService from '../services/CommentService';
 import UserHelperClass from '../helper/UserHelperClass';
-import TokenHelperClass from '../helper/TokenHelperClass';
 import ArticleHelperClass from '../helper/ArticleHelperClass';
 
 /* eslint no-underscore-dangle: ["error", { "allow": ["_id", "_doc"] }] */
@@ -13,9 +12,7 @@ const ArticleResolver = {
   createArticle: async (args) => {
     try {
       args = args.articleInput;
-      const isTokenValid = TokenHelperClass.validateToken(args.token);
-      const { userId } = isTokenValid.decodedToken;
-      await UserHelperClass.validateUser(userId);
+      const userId = await UserHelperClass.validateUser(args.token);
       const newArticle = await ArticleService.create({
         title: args.title,
         body: args.body,
@@ -37,10 +34,8 @@ const ArticleResolver = {
   updateArticle: async (args) => {
     try {
       args = args.articleInput;
-      const isTokenValid = TokenHelperClass.validateToken(args.token);
-      const { userId } = isTokenValid.decodedToken;
+      const userId = await UserHelperClass.validateUser(args.token);
       const savedArticle = await ArticleHelperClass.validateArticle(args._id);
-      await UserHelperClass.validateUser(userId);
       const userCanUpdateArticle = await UserHelperClass
         .hasAccess(savedArticle.author.toString(), userId);
       if (!userCanUpdateArticle) throw new Error("You don't have write access");
@@ -56,10 +51,8 @@ const ArticleResolver = {
   deleteArticle: async (args) => {
     try {
       args = args.articleInput;
-      const isTokenValid = TokenHelperClass.validateToken(args.token);
-      const { userId } = isTokenValid.decodedToken;
+      const userId = await UserHelperClass.validateUser(args.token);
       const savedArticle = await ArticleHelperClass.validateArticle(args._id);
-      await UserHelperClass.validateUser(userId);
       const userCanDeleteArticle = await UserHelperClass
         .hasAccess(savedArticle.author.toString(), userId);
       if (!userCanDeleteArticle) throw new Error("You don't have write access");
@@ -71,10 +64,8 @@ const ArticleResolver = {
   addComment: async (args) => {
     try {
       args = args.commentInput;
-      const isTokenValid = TokenHelperClass.validateToken(args.token);
-      const { userId } = isTokenValid.decodedToken;
+      const userId = await UserHelperClass.validateUser(args.token);
       await ArticleHelperClass.validateArticle(args.articleId);
-      await UserHelperClass.validateUser(userId);
       const commentObject = {
         articleId: args.articleId,
         body: args.commentBody,
@@ -89,11 +80,9 @@ const ArticleResolver = {
   addReplyToComment: async (args) => {
     try {
       args = args.replyInput;
-      const isTokenValid = TokenHelperClass.validateToken(args.token);
-      const { userId } = isTokenValid.decodedToken;
+      const userId = await UserHelperClass.validateUser(args.token);
       await ArticleHelperClass.validateArticle(args.articleId);
       await ArticleHelperClass.validateComment(args.commentId);
-      await UserHelperClass.validateUser(userId);
       const replyObject = {
         body: args.replyBody,
         author: userId,
@@ -109,11 +98,9 @@ const ArticleResolver = {
   addReplyToReply: async (args) => {
     try {
       args = args.replyInput;
-      const isTokenValid = TokenHelperClass.validateToken(args.token);
-      const { userId } = isTokenValid.decodedToken;
+      const userId = await UserHelperClass.validateUser(args.token);
       await ArticleHelperClass.validateArticle(args.articleId);
       await ArticleHelperClass.validateReply(args.replyId);
-      await UserHelperClass.validateUser(userId);
       const replyObject = {
         body: args.replyBody,
         author: userId,

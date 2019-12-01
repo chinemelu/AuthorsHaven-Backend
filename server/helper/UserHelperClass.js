@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import TokenHelperClass from './TokenHelperClass';
+import GeneralHelperClass from './GeneralHelperClass';
 import ResponseHandler from './ResponseHandler';
 import UserService from '../services/UserService';
 import GeneralService from '../services/GeneralService';
@@ -47,31 +48,47 @@ class UserHelperClass {
   }
 
   /**
-  * @param {String} userId - id of user to be validated
+  * @param {String} token - the jwt token received upon login/signup
+  * @param {String} secondUserId - id of user apart from user in a token
   * @param {String} message - optional message
  * @returns {null} - null
  */
-  static async validateUser(userId, message) {
+  static async validateUser(token, secondUserId, message) {
+    let userId = secondUserId;
+    if (token) {
+      const isTokenValid = TokenHelperClass.validateToken(token);
+      ({ userId } = isTokenValid.decodedToken);
+    }
+    const isUserIdValid = GeneralHelperClass.isIdValid(userId);
+    if (!isUserIdValid) throw new Error('Invalid userId');
     const savedUser = await UserService
       .findById(userId);
     if (savedUser === null) throw new Error(message || 'User does not exist');
+    return userId;
   }
 
   /**
   * @param {String} userBeingFollowedId - id of user being followed
   * @param {String} followerId - id of follower
+  * @param {String} type - if validating followerUser or unfollowUser
  * @returns {null} - null
  */
-  static async validateFollower(userBeingFollowedId, followerId) {
+  static async validateFollower(userBeingFollowedId, followerId, type) {
     const existingFollowing = await GeneralService.findOne(Follower, ({
       $and: [{ follower: followerId },
         { userBeingFollowed: userBeingFollowedId }]
     }));
-    if (existingFollowing) {
+    if (type === 'follow' && existingFollowing) {
       throw new Error('You are already following this user');
     }
-    if (userBeingFollowedId === followerId) {
+    if (type === 'follow' && userBeingFollowedId === followerId) {
       throw new Error('You cannot follow yourself');
+    }
+    if (type === 'unfollow' && !existingFollowing) {
+      throw new Error('You are not following this user');
+    }
+    if (type === 'unfollow' && userBeingFollowedId === followerId) {
+      throw new Error('You cannot unfollow yourself');
     }
   }
 }
