@@ -79,6 +79,7 @@ const schema = buildSchema(`
     article: ID
     replies: [Replies]
     body: String
+    createdAt: String
   }
 
   type meta {

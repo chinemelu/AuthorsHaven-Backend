@@ -82,7 +82,7 @@ const ArticleResolver = {
       args = args.replyInput;
       const userId = await UserHelperClass.validateUser(args.token);
       await ArticleHelperClass.validateArticle(args.articleId);
-      await ArticleHelperClass.validateComment(args.commentId);
+      await ArticleHelperClass.validateComment(args.commentId, 'comment');
       const replyObject = {
         body: args.replyBody,
         author: userId,
@@ -90,7 +90,7 @@ const ArticleResolver = {
         articleId: args.articleId
       };
       const addedReply = await CommentService.replyToComment(replyObject);
-      return addedReply[0];
+      return addedReply;
     } catch (error) {
       throw error;
     }
@@ -100,7 +100,7 @@ const ArticleResolver = {
       args = args.replyInput;
       const userId = await UserHelperClass.validateUser(args.token);
       await ArticleHelperClass.validateArticle(args.articleId);
-      await ArticleHelperClass.validateReply(args.replyId);
+      await ArticleHelperClass.validateComment(args.replyId, 'reply');
       const replyObject = {
         body: args.replyBody,
         author: userId,
@@ -108,7 +108,7 @@ const ArticleResolver = {
         articleId: args.articleId
       };
       const addedReply = await CommentService.replyToReply(replyObject);
-      return addedReply[0];
+      return addedReply;
     } catch (error) {
       throw error;
     }

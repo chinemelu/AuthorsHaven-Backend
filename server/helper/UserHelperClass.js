@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import TokenHelperClass from './TokenHelperClass';
 import GeneralHelperClass from './GeneralHelperClass';
 import ResponseHandler from './ResponseHandler';
-import UserService from '../services/UserService';
+import User from '../models/user';
 import GeneralService from '../services/GeneralService';
 import Follower from '../models/follower';
 
@@ -61,8 +61,8 @@ class UserHelperClass {
     }
     const isUserIdValid = GeneralHelperClass.isIdValid(userId);
     if (!isUserIdValid) throw new Error('Invalid userId');
-    const savedUser = await UserService
-      .findById(userId);
+    const savedUser = await GeneralService
+      .findById(User, userId);
     if (savedUser === null) throw new Error(message || 'User does not exist');
     return userId;
   }

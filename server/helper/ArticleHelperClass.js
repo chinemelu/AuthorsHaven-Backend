@@ -1,8 +1,8 @@
 import ArticleService from '../services/ArticleService';
-import CommentService from '../services/CommentService';
+import GeneralService from '../services/GeneralService';
 import GeneralHelperClass from './GeneralHelperClass';
-import ReplyService from '../services/ReplyService';
-
+import Reply from '../models/reply';
+import Comment from '../models/comments';
 
 /**
  * Helper class for all things relating to tokens
@@ -22,36 +22,42 @@ class ArticleHelperClass {
   }
 
   /**
- * @param {String} commentId - the id of the comment to be validated
+ * @param {String} id - the id of the comment/reply to be validated
+ * @param {String} type - type of comment - 'reply' or 'comment'
  * @returns {null} the token
  */
-  static async validateComment(commentId) {
+  static async validateComment(id, type) {
     try {
-      if (!commentId) throw new Error('Comment Id is required');
-      const isIdValid = GeneralHelperClass.isIdValid(commentId);
-      if (!isIdValid) throw new Error('Invalid commentId');
-      const savedComment = await CommentService.findCommentById(commentId);
-      if (savedComment === null) throw new Error('Comment does not exist');
+      if (!id) throw new Error(`${type} Id is required`);
+      const isIdValid = GeneralHelperClass.isIdValid(id);
+      if (!isIdValid) throw new Error(`Invalid ${type}Id`);
+      let savedType;
+      if (type === 'comment') {
+        savedType = await GeneralService.findById(Comment, id);
+      } else {
+        savedType = await GeneralService.findById(Reply, id);
+      }
+      if (savedType === null) throw new Error(`${type} does not exist`);
     } catch (error) {
       throw error;
     }
   }
 
-  /**
- * @param {String} replyId - the id of the reply to be validated
- * @returns {null} the token
- */
-  static async validateReply(replyId) {
-    try {
-      if (!replyId) throw new Error('ReplyId is required');
-      const isIdValid = GeneralHelperClass.isIdValid(replyId);
-      if (!isIdValid) throw new Error('Invalid replyId');
-      const savedReply = await ReplyService.findReplyById(replyId);
-      if (savedReply === null) throw new Error('Reply does not exist');
-    } catch (error) {
-      throw error;
-    }
-  }
+//   /**
+//  * @param {String} replyId - the id of the reply to be validated
+//  * @returns {null} the token
+//  */
+//   static async validateReply(replyId) {
+//     try {
+//       if (!replyId) throw new Error('ReplyId is required');
+//       const isIdValid = GeneralHelperClass.isIdValid(replyId);
+//       if (!isIdValid) throw new Error('Invalid replyId');
+//       const savedReply = await ReplyService.findReplyById(replyId);
+//       if (savedReply === null) throw new Error('Reply does not exist');
+//     } catch (error) {
+//       throw error;
+//     }
+//   }
 }
 
 export default ArticleHelperClass;

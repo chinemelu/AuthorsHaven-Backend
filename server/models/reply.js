@@ -4,21 +4,18 @@ const replySchema = new mongoose.Schema({
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
   },
   comment: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Comment',
-    required: true
   },
   article: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Comment',
-    required: true
+    ref: 'Article',
   },
   body: {
     type: String,
-    required: true
+    required: [true, 'Article body is required']
   },
   replies: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -29,6 +26,7 @@ const replySchema = new mongoose.Schema({
 {
   timestamps: true
 });
+
 
 const Reply = mongoose.model('Reply', replySchema);
 

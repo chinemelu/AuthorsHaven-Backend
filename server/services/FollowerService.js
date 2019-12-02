@@ -16,10 +16,7 @@ class FollowerService {
   static async create(followerObject) {
     let session = null;
     try {
-      await Follower.createCollection();
-      const _session = await Follower.startSession();
-      session = _session;
-      session.startTransaction();
+      session = await GeneralService.startTransaction(Follower, session);
 
       const createdFollower = await GeneralService
         .create(Follower, followerObject);
@@ -32,12 +29,10 @@ class FollowerService {
           },
           { followers: createdFollower.follower }
         );
-      await session.commitTransaction();
-      session.endSession();
+      await GeneralService.commitTransaction(session);
       return createdFollower;
     } catch (error) {
-      await session.abortTransaction();
-      session.endSession();
+      await GeneralService.abortTransaction(session);
       throw new Error(error.errors.body.message);
     }
   }
@@ -50,10 +45,7 @@ class FollowerService {
   static async delete(followerObject) {
     let session = null;
     try {
-      await Follower.createCollection();
-      const _session = await Follower.startSession();
-      session = _session;
-      session.startTransaction();
+      session = await GeneralService.startTransaction(Follower, session);
 
       await GeneralService
         .delete(Follower, ({
@@ -72,11 +64,9 @@ class FollowerService {
           },
           'pull'
         );
-      await session.commitTransaction();
-      session.endSession();
+      await GeneralService.commitTransaction(session);
     } catch (error) {
-      await session.abortTransaction();
-      session.endSession();
+      await GeneralService.abortTransaction(session);
       throw new Error(error.errors.body.message);
     }
   }
