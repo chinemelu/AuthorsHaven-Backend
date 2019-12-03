@@ -1,7 +1,10 @@
 import ArticleService from '../services/ArticleService';
+import GeneralService from '../services/GeneralService';
 import CommentService from '../services/CommentService';
 import UserHelperClass from '../helper/UserHelperClass';
 import ArticleHelperClass from '../helper/ArticleHelperClass';
+import Article from '../models/article';
+import GeneralHelperClass from '../helper/GeneralHelperClass';
 
 /* eslint no-underscore-dangle: ["error", { "allow": ["_id", "_doc"] }] */
 
@@ -39,7 +42,7 @@ const ArticleResolver = {
       const userCanUpdateArticle = await UserHelperClass
         .hasAccess(savedArticle.author.toString(), userId);
       if (!userCanUpdateArticle) throw new Error("You don't have write access");
-      await ArticleService.update({ _id: args._id }, {
+      await GeneralService.update(Article, { _id: args._id }, {
         title: args.title || savedArticle.title,
         body: args.body || savedArticle.body,
         images: args.images || savedArticle.images
@@ -80,9 +83,8 @@ const ArticleResolver = {
   addReplyToComment: async (args) => {
     try {
       args = args.replyInput;
-      const userId = await UserHelperClass.validateUser(args.token);
-      await ArticleHelperClass.validateArticle(args.articleId);
-      await ArticleHelperClass.validateComment(args.commentId);
+      const userId = await GeneralHelperClass
+        .validateCommentFields(args, 'comment');
       const replyObject = {
         body: args.replyBody,
         author: userId,
@@ -90,7 +92,7 @@ const ArticleResolver = {
         articleId: args.articleId
       };
       const addedReply = await CommentService.replyToComment(replyObject);
-      return addedReply[0];
+      return addedReply;
     } catch (error) {
       throw error;
     }
@@ -98,9 +100,8 @@ const ArticleResolver = {
   addReplyToReply: async (args) => {
     try {
       args = args.replyInput;
-      const userId = await UserHelperClass.validateUser(args.token);
-      await ArticleHelperClass.validateArticle(args.articleId);
-      await ArticleHelperClass.validateReply(args.replyId);
+      const userId = await GeneralHelperClass
+        .validateCommentFields(args, 'reply');
       const replyObject = {
         body: args.replyBody,
         author: userId,
@@ -108,7 +109,7 @@ const ArticleResolver = {
         articleId: args.articleId
       };
       const addedReply = await CommentService.replyToReply(replyObject);
-      return addedReply[0];
+      return addedReply;
     } catch (error) {
       throw error;
     }

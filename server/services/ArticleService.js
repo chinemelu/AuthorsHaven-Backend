@@ -50,19 +50,19 @@ class ArticleService {
     }
   }
 
-  /**
-   * updates an article by Id
-    * @param {Object} identifier - property used to identify article
-    * @param {Object} toBeUpdated - property to be updated
-    * @returns {Object} updatedArticle
-    */
-  static async update(identifier, toBeUpdated) {
-    try {
-      await Article.updateOne(identifier, toBeUpdated);
-    } catch (error) {
-      throw error;
-    }
-  }
+  // /**
+  //  * updates an article by Id
+  //   * @param {Object} identifier - property used to identify article
+  //   * @param {Object} toBeUpdated - property to be updated
+  //   * @returns {Object} updatedArticle
+  //   */
+  // static async update(identifier, toBeUpdated) {
+  //   try {
+  //     await Article.updateOne(identifier, toBeUpdated);
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
   /**
    * deletes an article by Id
@@ -77,20 +77,20 @@ class ArticleService {
     }
   }
 
-  /**
-   * finds and updates an article by Id
-    * @param {String} id - id property of article
-    * @param {Object} fieldObjectToBeUpdated - the field to be updated
-    * @returns {null} returns null
-    */
-  static async findOneAndUpdate(id, fieldObjectToBeUpdated) {
-    try {
-      await Article.findOneAndUpdate({ _id: id },
-        { $push: fieldObjectToBeUpdated });
-    } catch (error) {
-      throw error;
-    }
-  }
+  // /**
+  //  * finds and updates an article by Id
+  //   * @param {String} id - id property of article
+  //   * @param {Object} fieldObjectToBeUpdated - the field to be updated
+  //   * @returns {null} returns null
+  //   */
+  // static async findOneAndUpdate(id, fieldObjectToBeUpdated) {
+  //   try {
+  //     await Article.findOneAndUpdate({ _id: id },
+  //       { $push: fieldObjectToBeUpdated });
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 }
 
 export default ArticleService;

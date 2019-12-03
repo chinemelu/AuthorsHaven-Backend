@@ -1,4 +1,7 @@
-import GeneralHelperClass from '../helper/GeneralHelperClass';
+
+/* eslint no-underscore-dangle:
+ ["error", { "allow": ["_id", "_doc", "_session"] }] */
+/**
 
 /**
  * it handles all general database calls
@@ -16,7 +19,8 @@ class GeneralService {
       const savedModel = await model.save();
       return savedModel;
     } catch (error) {
-      GeneralHelperClass.handleModelValidationErrors(error);
+      throw new Error(error);
+      // GeneralHelperClass.handleModelValidationErrors(error);
     }
   }
 
@@ -68,6 +72,69 @@ class GeneralService {
   static async delete(Model, identifier) {
     try {
       await Model.deleteOne(identifier);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * starts a transaction
+   * @param {String} Model - database model
+   * @param {Object} session - transaction session
+    * @returns {Object} user object or empty object
+    */
+  static async startTransaction(Model, session) {
+    const _session = await Model.startSession();
+    session = _session;
+    session.startTransaction();
+    return session;
+  }
+
+  /**
+   * commits a transaction
+   * @param {Object} session - transaction session
+    * @returns {null} null
+    */
+  static async commitTransaction(session) {
+    await session.commitTransaction();
+    session.endSession();
+  }
+
+  /**
+   * aborts a transaction
+   * @param {Object} session - transaction session
+    * @returns {null} null
+    */
+  static async abortTransaction(session) {
+    await session.abortTransaction();
+    session.endSession();
+  }
+
+  /**
+   * checks if a document exists
+   * @param {Object} Model - the database model
+    * @param {String} id - the id of the resource being check
+    * @returns {Object} user object or empty object
+    */
+  static async findById(Model, id) {
+    try {
+      const savedModel = await Model.findById(id);
+      return savedModel;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * updates a model
+   * @param {Object} Model - database model
+    * @param {Object} identifier - the parameter used to identify the db entity
+    * @param {Object} toBeUpdated - the parameter to be updated on the database
+    * @returns {Object} user object or empty object
+    */
+  static async update(Model, identifier, toBeUpdated) {
+    try {
+      await Model.updateOne(identifier, toBeUpdated);
     } catch (error) {
       throw error;
     }

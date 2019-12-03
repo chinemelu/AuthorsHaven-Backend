@@ -26,19 +26,19 @@ class UserService {
     }
   }
 
-  /**
-   * checks if a user exists using an id
-    * @param {String} id - the id of a user
-    * @returns {Object} user object or empty object
-    */
-  static async findById(id) {
-    try {
-      const user = await User.findById(id);
-      return user;
-    } catch (error) {
-      throw error;
-    }
-  }
+  // /**
+  //  * checks if a user exists using an id
+  //   * @param {String} id - the id of a user
+  //   * @returns {Object} user object or empty object
+  //   */
+  // static async findById(id) {
+  //   try {
+  //     const user = await User.findById(id);
+  //     return user;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
   /**
    * checks if a user exists using an email
@@ -80,19 +80,19 @@ class UserService {
     }
   }
 
-  /**
-   * checks if a user exists using an id
-    * @param {Object} identifier - the parameter used to identify the db entity
-    * @param {Object} toBeUpdated - the parameter to be updated on the database
-    * @returns {Object} user object or empty object
-    */
-  static async update(identifier, toBeUpdated) {
-    try {
-      await User.updateOne(identifier, toBeUpdated);
-    } catch (error) {
-      throw error;
-    }
-  }
+  // /**
+  //  * checks if a user exists using an id
+  //   * @param {Object} identifier - the parameter used to identify the db
+  //   * @param {Object} toBeUpdated - the parameter to be updated on the db
+  //   * @returns {Object} user object or empty object
+  //   */
+  // static async update(identifier, toBeUpdated) {
+  //   try {
+  //     await User.updateOne(identifier, toBeUpdated);
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
   /**
    * find a user by username or email

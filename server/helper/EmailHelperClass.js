@@ -1,7 +1,8 @@
 import sgMail from '@sendgrid/mail';
+import GeneralService from '../services/GeneralService';
+import User from '../models/user';
 import TokenHelperClass from './TokenHelperClass';
 import ResponseHandler from './ResponseHandler';
-import UserService from '../services/UserService';
 
 /**
  * @class EmailHelperClass
@@ -21,7 +22,7 @@ class EmailHelperClass {
         return ResponseHandler.error(401, verifiedToken.error, res);
       }
       const { userId } = verifiedToken.decodedToken;
-      const foundUser = await UserService.findById(userId);
+      const foundUser = await GeneralService.findById(User, userId);
 
       EmailHelperClass.emailVerificationValidation(foundUser, res);
 
@@ -29,7 +30,7 @@ class EmailHelperClass {
         . emailCanBeVerified(foundUser);
 
       if (emailCanBeVerified) {
-        await UserService.update({ _id: userId },
+        await GeneralService.update(User, { _id: userId },
           { isVerified: true }).then(() => {
           ResponseHandler
             .success(200,

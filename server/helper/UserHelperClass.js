@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import TokenHelperClass from './TokenHelperClass';
 import GeneralHelperClass from './GeneralHelperClass';
 import ResponseHandler from './ResponseHandler';
-import UserService from '../services/UserService';
+import User from '../models/user';
 import GeneralService from '../services/GeneralService';
 import Follower from '../models/follower';
 
@@ -49,21 +49,34 @@ class UserHelperClass {
 
   /**
   * @param {String} token - the jwt token received upon login/signup
+ * @returns {null} - null
+ */
+  static async validateUser(token) {
+    const isTokenValid = TokenHelperClass.validateToken(token);
+    const userId = isTokenValid.decodedToken;
+    const savedUser = await GeneralService
+      .findById(User, userId);
+    if (savedUser === null) throw new Error('User does not exist');
+    return userId;
+  }
+
+  /**
+  * @param {String} token - the jwt token received upon login/signup
   * @param {String} secondUserId - id of user apart from user in a token
   * @param {String} message - optional message
  * @returns {null} - null
  */
-  static async validateUser(token, secondUserId, message) {
-    let userId = secondUserId;
-    if (token) {
-      const isTokenValid = TokenHelperClass.validateToken(token);
-      ({ userId } = isTokenValid.decodedToken);
-    }
-    const isUserIdValid = GeneralHelperClass.isIdValid(userId);
+  static async validateTwoUsers(token, secondUserId, message) {
+    const isTokenValid = TokenHelperClass.validateToken(token);
+    const { userId } = isTokenValid.decodedToken;
+    const savedTokenUser = await GeneralService
+      .findById(User, userId);
+    if (savedTokenUser === null) throw new Error('User does not exist');
+    const isUserIdValid = GeneralHelperClass.isIdValid(secondUserId);
     if (!isUserIdValid) throw new Error('Invalid userId');
-    const savedUser = await UserService
-      .findById(userId);
-    if (savedUser === null) throw new Error(message || 'User does not exist');
+    const secondUser = await GeneralService
+      .findById(User, secondUserId);
+    if (secondUser === null) throw new Error(message);
     return userId;
   }
 

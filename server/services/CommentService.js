@@ -1,7 +1,7 @@
 import Comment from '../models/comments';
 import Reply from '../models/reply';
-import ReplyService from './ReplyService';
-import ArticleService from './ArticleService';
+import Article from '../models/article';
+import GeneralService from './GeneralService';
 
 /* eslint no-underscore-dangle:
  ["error", { "allow": ["_id", "_doc", "_session"] }] */
@@ -18,58 +18,54 @@ class CommentService {
   static async create(commentObject) {
     let session = null;
     try {
-      await Comment.createCollection();
-      const _session = await Comment.startSession();
-      session = _session;
-      session.startTransaction();
+      session = await GeneralService.startTransaction(Comment, session);
       const createdComment = await Comment.create([{
         body: commentObject.body,
         author: commentObject.author,
         article: commentObject.articleId
-      }], { session });
+      }]);
+
       const comments = {
         _id: createdComment[0]._id,
       };
-      await ArticleService
-        .findOneAndUpdate(commentObject.articleId, { comments });
-      await session.commitTransaction();
-      session.endSession();
+      await GeneralService
+        .findOneAndUpdate(Article, commentObject.articleId, { comments });
+      await GeneralService.commitTransaction(session);
       return createdComment;
     } catch (error) {
-      await session.abortTransaction();
-      session.endSession();
+      GeneralService.abortTransaction(session);
       throw new Error(error.errors.body.message);
     }
   }
 
-  /**
-   * finds comment by id
-    * @param {String} id - the id of the comment
-    * @returns {null} returns null
-    */
-  static async findCommentById(id) {
-    try {
-      const savedComment = await Comment.findById(id);
-      return savedComment;
-    } catch (error) {
-      throw error;
-    }
-  }
+  // /**
+  //  * finds comment by id
+  //   * @param {String} id - the id of the comment
+  //   * @returns {null} returns null
+  //   */
+  // static async findCommentById(id) {
+  //   try {
+  //     const savedComment = await Comment.findById(id);
+  //     return savedComment;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
-  /**
-   * finds and updates a comment by Id
-    * @param {String} id - id property of article
-    * @param {Object} fieldObjectToBeUpdated - the field to be updated
-    * @returns {null} returns null
-    */
-  static async findOneAndUpdate(id, fieldObjectToBeUpdated) {
-    try {
-      await Comment.findOneAndUpdate({ _id: id },
-        { $push: fieldObjectToBeUpdated });
-    } catch (error) {
-      throw error;
-    }
-  }
+  // /**
+  //  * finds and updates a comment by Id
+  //   * @param {String} id - id property of article
+  //   * @param {Object} fieldObjectToBeUpdated - the field to be updated
+  //   * @returns {null} returns null
+  //   */
+  // static async findOneAndUpdate(id, fieldObjectToBeUpdated) {
+  //   try {
+  //     await Comment.findOneAndUpdate({ _id: id },
+  //       { $push: fieldObjectToBeUpdated });
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
   /**
    * creates reply
@@ -79,27 +75,25 @@ class CommentService {
   static async replyToComment(replyObject) {
     let session = null;
     try {
-      await Reply.createCollection();
-      const _session = await Reply.startSession();
-      session = _session;
-      session.startTransaction();
-      const createdReply = await Reply.create([{
+      session = await GeneralService.startTransaction(Reply, session);
+      const createReplyObject = {
         body: replyObject.body,
         author: replyObject.author,
         comment: replyObject.commentId,
         article: replyObject.articleId
-      }], { session });
-      const reply = {
-        _id: createdReply[0]._id,
       };
-      await CommentService
-        .findOneAndUpdate(replyObject.commentId, { replies: reply });
-      await session.commitTransaction();
-      session.endSession();
+      const createdReply = await GeneralService
+        .create(Reply, createReplyObject);
+
+      const reply = {
+        _id: createdReply._id,
+      };
+      await GeneralService
+        .findOneAndUpdate(Comment, replyObject.commentId, { replies: reply });
+      await GeneralService.commitTransaction(session);
       return createdReply;
     } catch (error) {
-      await session.abortTransaction();
-      session.endSession();
+      await GeneralService.abortTransaction(session);
       throw new Error(error.errors.body.message);
     }
   }
@@ -112,27 +106,24 @@ class CommentService {
   static async replyToReply(replyObject) {
     let session = null;
     try {
-      await Reply.createCollection();
-      const _session = await Reply.startSession();
-      session = _session;
-      session.startTransaction();
-      const createdReply = await Reply.create([{
+      session = await GeneralService.startTransaction(Reply, session);
+      const createReplyObject = {
         body: replyObject.body,
         author: replyObject.author,
         comment: replyObject.replyId,
         article: replyObject.articleId
-      }], { session });
-      const reply = {
-        _id: createdReply[0]._id,
       };
-      await ReplyService
-        .findOneAndUpdate(replyObject.replyId, { replies: reply });
-      await session.commitTransaction();
-      session.endSession();
+      const createdReply = await GeneralService
+        .create(Reply, createReplyObject);
+      const reply = {
+        _id: createdReply._id,
+      };
+      await GeneralService
+        .findOneAndUpdate(Reply, replyObject.replyId, { replies: reply });
+      await GeneralService.commitTransaction(session);
       return createdReply;
     } catch (error) {
-      await session.abortTransaction();
-      session.endSession();
+      await GeneralService.abortTransaction(session);
       throw new Error(error.errors.body.message);
     }
   }
