@@ -1,4 +1,5 @@
 import ArticleService from '../services/ArticleService';
+import UserHelperClass from './UserHelperClass';
 import GeneralService from '../services/GeneralService';
 import GeneralHelperClass from './GeneralHelperClass';
 import Reply from '../models/reply';
@@ -41,6 +42,19 @@ class ArticleHelperClass {
     } catch (error) {
       throw error;
     }
+  }
+
+  /**
+   *
+   * @param {Object} args - the argument from the graphQL schema
+   * @param {String} type - whether 'comment' or 'reply'
+   * @returns {String} - the id of a valid user
+   */
+  static async validateCommentsField(args, type) {
+    const userId = await UserHelperClass.validateUser(args.token);
+    await ArticleHelperClass.validateArticle(args.articleId);
+    await ArticleHelperClass.validateComment(args.commentId, type);
+    return userId;
   }
 
 //   /**

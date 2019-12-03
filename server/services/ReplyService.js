@@ -1,4 +1,3 @@
-import Reply from '../models/reply';
 
 /* eslint no-underscore-dangle:
  ["error", { "allow": ["_id", "_doc", "_session"] }] */

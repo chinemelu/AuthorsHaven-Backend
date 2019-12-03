@@ -3,7 +3,6 @@ import GeneralService from '../services/GeneralService';
 import User from '../models/user';
 import TokenHelperClass from './TokenHelperClass';
 import ResponseHandler from './ResponseHandler';
-import UserService from '../services/UserService';
 
 /**
  * @class EmailHelperClass
@@ -31,7 +30,7 @@ class EmailHelperClass {
         . emailCanBeVerified(foundUser);
 
       if (emailCanBeVerified) {
-        await UserService.update({ _id: userId },
+        await GeneralService.update(User, { _id: userId },
           { isVerified: true }).then(() => {
           ResponseHandler
             .success(200,

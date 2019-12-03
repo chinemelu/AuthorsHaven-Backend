@@ -50,19 +50,19 @@ class ArticleService {
     }
   }
 
-  /**
-   * updates an article by Id
-    * @param {Object} identifier - property used to identify article
-    * @param {Object} toBeUpdated - property to be updated
-    * @returns {Object} updatedArticle
-    */
-  static async update(identifier, toBeUpdated) {
-    try {
-      await Article.updateOne(identifier, toBeUpdated);
-    } catch (error) {
-      throw error;
-    }
-  }
+  // /**
+  //  * updates an article by Id
+  //   * @param {Object} identifier - property used to identify article
+  //   * @param {Object} toBeUpdated - property to be updated
+  //   * @returns {Object} updatedArticle
+  //   */
+  // static async update(identifier, toBeUpdated) {
+  //   try {
+  //     await Article.updateOne(identifier, toBeUpdated);
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 
   /**
    * deletes an article by Id

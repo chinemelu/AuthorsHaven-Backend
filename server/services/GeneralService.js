@@ -124,6 +124,21 @@ class GeneralService {
       throw error;
     }
   }
+
+  /**
+   * updates a model
+   * @param {Object} Model - database model
+    * @param {Object} identifier - the parameter used to identify the db entity
+    * @param {Object} toBeUpdated - the parameter to be updated on the database
+    * @returns {Object} user object or empty object
+    */
+  static async update(Model, identifier, toBeUpdated) {
+    try {
+      await Model.updateOne(identifier, toBeUpdated);
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default GeneralService;

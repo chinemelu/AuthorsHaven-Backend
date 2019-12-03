@@ -1,4 +1,6 @@
 import UserService from '../services/UserService';
+import User from '../models/user';
+import GeneralService from '../services/GeneralService';
 import FollowerService from '../services/FollowerService';
 import UserProfileService from '../services/UserProfileService';
 import TokenHelperClass from '../helper/TokenHelperClass';
@@ -64,8 +66,9 @@ const UserResolver = {
       }
       const hashedPassword = await UserHelperClass
         .encryptPassword(args.password);
-      await UserService.update({ _id: decodedToken.decodedToken.userId },
-        { password: hashedPassword });
+      await GeneralService
+        .update(User, { _id: decodedToken.decodedToken.userId },
+          { password: hashedPassword });
     } catch (error) {
       throw error;
     }
@@ -103,9 +106,8 @@ const UserResolver = {
   },
   followUser: async (args) => {
     args = args.followInput;
-    const userId = await UserHelperClass.validateUser(args.token);
-    await UserHelperClass
-      .validateUser(null, args.userId,
+    const userId = await UserHelperClass
+      .validateTwoUsers(args.token, args.userId,
         'The user you are trying to follow does not exist');
     await UserHelperClass
       .validateFollower(args.userId, userId, 'follow');
@@ -117,9 +119,8 @@ const UserResolver = {
   },
   unfollowUser: async (args) => {
     args = args.followInput;
-    const userId = await UserHelperClass.validateUser(args.token);
-    await UserHelperClass
-      .validateUser(null, args.userId,
+    const userId = await UserHelperClass
+      .validateTwoUsers(args.token, args.userId,
         'The user you are trying to unfollow does not exist');
     await UserHelperClass
       .validateFollower(args.userId, userId, 'unfollow');
