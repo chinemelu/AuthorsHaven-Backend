@@ -4,7 +4,6 @@ import CommentService from '../services/CommentService';
 import UserHelperClass from '../helper/UserHelperClass';
 import ArticleHelperClass from '../helper/ArticleHelperClass';
 import Article from '../models/article';
-import GeneralHelperClass from '../helper/GeneralHelperClass';
 
 /* eslint no-underscore-dangle: ["error", { "allow": ["_id", "_doc"] }] */
 
@@ -82,8 +81,8 @@ const ArticleResolver = {
   },
   addReplyToComment: async (args) => {
     try {
-      args = args.replyInput;
-      const userId = await GeneralHelperClass
+      args = args.replyToCommentInput;
+      const userId = await ArticleHelperClass
         .validateCommentFields(args, 'comment');
       const replyObject = {
         body: args.replyBody,
@@ -99,8 +98,8 @@ const ArticleResolver = {
   },
   addReplyToReply: async (args) => {
     try {
-      args = args.replyInput;
-      const userId = await GeneralHelperClass
+      args = args.replyToReplyInput;
+      const userId = await ArticleHelperClass
         .validateCommentFields(args, 'reply');
       const replyObject = {
         body: args.replyBody,
@@ -110,6 +109,22 @@ const ArticleResolver = {
       };
       const addedReply = await CommentService.replyToReply(replyObject);
       return addedReply;
+    } catch (error) {
+      throw error;
+    }
+  },
+  createBookmark: async (args) => {
+    try {
+      const userId = await UserHelperClass.validateUser(args.token);
+      await ArticleHelperClass.validateArticle(args.articleId);
+      await ArticleHelperClass.validateBookmark(args.articleId, userId);
+      const bookmarkObject = {
+        article: args.articleId,
+        owner: userId
+      };
+      const createdBookmark = await ArticleService
+        .createBookmark(bookmarkObject);
+      return createdBookmark;
     } catch (error) {
       throw error;
     }

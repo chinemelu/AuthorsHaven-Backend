@@ -118,7 +118,7 @@ const UserResolver = {
     await FollowerService.create(followerObject);
   },
   unfollowUser: async (args) => {
-    args = args.followInput;
+    args = args.unfollowInput;
     const userId = await UserHelperClass
       .validateTwoUsers(args.token, args.userId,
         'The user you are trying to unfollow does not exist');

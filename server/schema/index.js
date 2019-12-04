@@ -12,10 +12,11 @@ const schema = buildSchema(`
     updateArticle(articleInput: UpdateArticleInput): Article
     deleteArticle(articleInput: DeleteArticleInput): Article
     addComment(commentInput: commentInput): Comments!
-    addReplyToComment(replyInput: replyInput): Comments!
-    addReplyToReply(replyInput: replyToReplyInput): Comments!
+    addReplyToComment(replyToCommentInput: replyInput): Comments!
+    addReplyToReply(replyToReplyInput: replyToReplyInput): Comments!
     followUser(followInput: followUser): User
-    unfollowUser(followInput: followUser): User
+    unfollowUser(unfollowInput: followUser): User
+    createBookmark(token: String!, articleId: String!): Article
   }
 
   type Query {
@@ -48,6 +49,7 @@ const schema = buildSchema(`
     bio: String
     owner: ID!
     followers: [User]
+    bookmarks: [Article]
   }
 
   type Article {

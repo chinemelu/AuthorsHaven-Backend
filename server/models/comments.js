@@ -25,16 +25,6 @@ const commentSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// commentSchema.pre('save', (next) => {
-//   if (!this.body) {
-//     next(new Error('something went wrong'));
-//   }
-//   // If you call `next()` with an argument, that argument is assumed to be
-//   // an error.
-
-//   // You can also throw an error in an `async` function
-// });
-
 const Comment = mongoose.model('Comment', commentSchema);
 
 export default Comment;
