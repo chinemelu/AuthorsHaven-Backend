@@ -78,18 +78,19 @@ class ArticleService {
       session = await GeneralService.startTransaction(Bookmark, session);
       const createBookmarkObject = {
         owner: bookmarkObject.owner,
-        article: bookmarkObject.articleId
+        article: bookmarkObject.article
       };
       const createdBookmark = await GeneralService
         .create(Bookmark, createBookmarkObject);
 
       const bookmark = {
-        _id: createdBookmark.article,
+        _id: bookmarkObject.article
       };
+
       await GeneralService
         .findOneAndUpdate(UserProfile, {
           owner: bookmarkObject.owner
-        }, { bookmark });
+        }, { bookmarks: bookmark });
       await GeneralService.commitTransaction(session);
       return createdBookmark;
     } catch (error) {

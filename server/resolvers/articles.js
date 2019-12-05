@@ -4,6 +4,7 @@ import CommentService from '../services/CommentService';
 import UserHelperClass from '../helper/UserHelperClass';
 import ArticleHelperClass from '../helper/ArticleHelperClass';
 import Article from '../models/article';
+import constants from '../constants';
 
 /* eslint no-underscore-dangle: ["error", { "allow": ["_id", "_doc"] }] */
 
@@ -35,16 +36,17 @@ const ArticleResolver = {
   },
   updateArticle: async (args) => {
     try {
-      args = args.articleInput;
-      const userId = await UserHelperClass.validateUser(args.token);
-      const savedArticle = await ArticleHelperClass.validateArticle(args._id);
-      const userCanUpdateArticle = await UserHelperClass
-        .hasAccess(savedArticle.author.toString(), userId);
-      if (!userCanUpdateArticle) throw new Error("You don't have write access");
+      args = args.updateArticleInput;
+      const type = {
+        HAS_ACCESS: constants.articleEnums.HAS_ACCESS
+      };
+      const result = await ArticleHelperClass
+        .validateInput(args.token, args._id, type);
+
       await GeneralService.update(Article, { _id: args._id }, {
-        title: args.title || savedArticle.title,
-        body: args.body || savedArticle.body,
-        images: args.images || savedArticle.images
+        title: args.title || result.savedArticle.title,
+        body: args.body || result.savedArticle.body,
+        images: args.images || result.savedArticle.images
       });
     } catch (error) {
       throw error;
@@ -52,12 +54,12 @@ const ArticleResolver = {
   },
   deleteArticle: async (args) => {
     try {
-      args = args.articleInput;
-      const userId = await UserHelperClass.validateUser(args.token);
-      const savedArticle = await ArticleHelperClass.validateArticle(args._id);
-      const userCanDeleteArticle = await UserHelperClass
-        .hasAccess(savedArticle.author.toString(), userId);
-      if (!userCanDeleteArticle) throw new Error("You don't have write access");
+      args = args.deleteArticleInput;
+      const type = {
+        HAS_ACCESS: constants.articleEnums.HAS_ACCESS
+      };
+      await ArticleHelperClass
+        .validateInput(args.token, args._id, type);
       await ArticleService.delete(args._id);
     } catch (error) {
       throw error;
@@ -66,12 +68,12 @@ const ArticleResolver = {
   addComment: async (args) => {
     try {
       args = args.commentInput;
-      const userId = await UserHelperClass.validateUser(args.token);
-      await ArticleHelperClass.validateArticle(args.articleId);
+      const result = await ArticleHelperClass
+        .validateInput(args.token, args.articleId);
       const commentObject = {
         articleId: args.articleId,
         body: args.commentBody,
-        author: userId
+        author: result.userId
       };
       const addedComment = await CommentService.create(commentObject);
       return addedComment[0];
@@ -115,12 +117,14 @@ const ArticleResolver = {
   },
   createBookmark: async (args) => {
     try {
-      const userId = await UserHelperClass.validateUser(args.token);
-      await ArticleHelperClass.validateArticle(args.articleId);
-      await ArticleHelperClass.validateBookmark(args.articleId, userId);
+      const type = {
+        BOOKMARK: constants.articleEnums.BOOKMARK
+      };
+      const result = await ArticleHelperClass
+        .validateInput(args.token, args.articleId, type);
       const bookmarkObject = {
         article: args.articleId,
-        owner: userId
+        owner: result.userId
       };
       const createdBookmark = await ArticleService
         .createBookmark(bookmarkObject);

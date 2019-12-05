@@ -11,7 +11,11 @@ const constants = {
     + ' Click on the link below to reset your password.'
     + 'The link expires in 1 hour. If you didn\'t request for this password,'
     + ' ignore this message.'
-  }
+  },
+  articleEnums: Object.freeze({
+    HAS_ACCESS: 'hasAccess',
+    BOOKMARK: 'bookmark'
+  })
 };
 
 export default constants;

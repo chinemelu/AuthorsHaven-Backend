@@ -5,6 +5,11 @@ import GeneralHelperClass from './GeneralHelperClass';
 import Reply from '../models/reply';
 import Comment from '../models/comments';
 import Bookmark from '../models/bookmark';
+import constants from '../constants';
+
+/* eslint no-underscore-dangle:
+ ["error", { "allow": ["_id", "_doc", "_session"] }] */
+/**
 
 /**
  * Helper class for all things relating to tokens
@@ -69,6 +74,57 @@ class ArticleHelperClass {
         { article: articleId }]
     }));
     if (existingBookmark) throw new Error('Bookmark already exists');
+  }
+
+  /**
+   *@param {Array} typeArray - array containing validation to be performed
+   * @param {String} savedArticle - the article in the database
+   * @param {String} userId - the user in the token
+   * @returns {null} - null
+   */
+  static async checkIfUserHasAccess(typeArray, savedArticle, userId) {
+    const { articleEnums } = constants;
+    if (typeArray.indexOf(articleEnums.HAS_ACCESS) > -1) {
+      const userHasWriteAccess = await UserHelperClass
+        .hasAccess(savedArticle.author.toString(), userId);
+      if (!userHasWriteAccess) throw new Error("You don't have write access");
+    }
+  }
+
+  /**
+   *@param {Array} typeArray - array containing validation to be performed
+   * @param {String} articleId - the id of article to be bookmarked
+   * @param {String} userId - the user in the token
+   * @returns {null} - null
+   */
+  static async checkIfBookmarkExists(typeArray, articleId, userId) {
+    const { articleEnums } = constants;
+    if (typeArray.indexOf(articleEnums.BOOKMARK) > -1) {
+      await ArticleHelperClass.validateBookmark(articleId, userId);
+    }
+  }
+
+  /**
+   * @param {String} token - the jwt token
+   * @param {String} articleId - the id of the article
+   * @param {Object} type - enumerated values determining validation to apply
+   * @returns {null} - null
+   */
+  static async validateInput(token, articleId, type = {}) {
+    try {
+      const userId = await UserHelperClass.validateUser(token);
+      const savedArticle = await ArticleHelperClass.validateArticle(articleId);
+      const typeArray = Object.values(type);
+
+      await ArticleHelperClass
+        .checkIfUserHasAccess(typeArray, savedArticle, userId);
+
+      await ArticleHelperClass
+        .checkIfBookmarkExists(typeArray, articleId, userId);
+      return { userId, savedArticle };
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

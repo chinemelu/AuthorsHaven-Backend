@@ -65,7 +65,12 @@ class UserService {
             path: 'profile',
             model: 'Profile',
             populate: {
-              path: 'Bookmarks',
+              path: 'bookmarks',
+              model: 'Article',
+              populate: {
+                path: 'author',
+                model: 'User'
+              },
             },
 
           }

@@ -9,8 +9,8 @@ const schema = buildSchema(`
     resetUserPassword(password: String!, token: String! ): User
     loginUser(usernameOrEmail: String!, password: String!): User!
     createArticle(articleInput: ArticleInput): Article!
-    updateArticle(articleInput: UpdateArticleInput): Article
-    deleteArticle(articleInput: DeleteArticleInput): Article
+    updateArticle(updateArticleInput: UpdateArticleInput): Article
+    deleteArticle(deleteArticleInput: DeleteArticleInput): Article
     addComment(commentInput: commentInput): Comments!
     addReplyToComment(replyToCommentInput: replyInput): Comments!
     addReplyToReply(replyToReplyInput: replyToReplyInput): Comments!
@@ -56,7 +56,7 @@ const schema = buildSchema(`
     _id: ID
     title: String
     body: String
-    author: String
+    author: User
     images: [String]
     createdAt: String
     updatedAt: String
