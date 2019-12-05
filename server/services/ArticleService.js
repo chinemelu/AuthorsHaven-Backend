@@ -1,5 +1,9 @@
 import Article from '../models/article';
+import Bookmark from '../models/bookmark';
+import UserProfile from '../models/userProfile';
+import GeneralService from './GeneralService';
 import GeneralHelperClass from '../helper/GeneralHelperClass';
+
 
 /**
  * it handles all database calls with respect to an article
@@ -50,20 +54,6 @@ class ArticleService {
     }
   }
 
-  // /**
-  //  * updates an article by Id
-  //   * @param {Object} identifier - property used to identify article
-  //   * @param {Object} toBeUpdated - property to be updated
-  //   * @returns {Object} updatedArticle
-  //   */
-  // static async update(identifier, toBeUpdated) {
-  //   try {
-  //     await Article.updateOne(identifier, toBeUpdated);
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
-
   /**
    * deletes an article by Id
     * @param {String} id - id property of article
@@ -77,20 +67,37 @@ class ArticleService {
     }
   }
 
-  // /**
-  //  * finds and updates an article by Id
-  //   * @param {String} id - id property of article
-  //   * @param {Object} fieldObjectToBeUpdated - the field to be updated
-  //   * @returns {null} returns null
-  //   */
-  // static async findOneAndUpdate(id, fieldObjectToBeUpdated) {
-  //   try {
-  //     await Article.findOneAndUpdate({ _id: id },
-  //       { $push: fieldObjectToBeUpdated });
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+  /**
+   * creates bookmark
+    * @param {Object} bookmarkObject - the object containing reply parameters
+    * @returns {Object} returns created reply
+    */
+  static async createBookmark(bookmarkObject) {
+    let session = null;
+    try {
+      session = await GeneralService.startTransaction(Bookmark, session);
+      const createBookmarkObject = {
+        owner: bookmarkObject.owner,
+        article: bookmarkObject.article
+      };
+      const createdBookmark = await GeneralService
+        .create(Bookmark, createBookmarkObject);
+
+      const bookmark = {
+        _id: bookmarkObject.article
+      };
+
+      await GeneralService
+        .findOneAndUpdate(UserProfile, {
+          owner: bookmarkObject.owner
+        }, { bookmarks: bookmark });
+      await GeneralService.commitTransaction(session);
+      return createdBookmark;
+    } catch (error) {
+      await GeneralService.abortTransaction(session);
+      throw new Error(error.errors.body.message);
+    }
+  }
 }
 
 export default ArticleService;

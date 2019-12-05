@@ -26,20 +26,6 @@ class UserService {
     }
   }
 
-  // /**
-  //  * checks if a user exists using an id
-  //   * @param {String} id - the id of a user
-  //   * @returns {Object} user object or empty object
-  //   */
-  // static async findById(id) {
-  //   try {
-  //     const user = await User.findById(id);
-  //     return user;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
-
   /**
    * checks if a user exists using an email
     * @param {String} email - the email of a user
@@ -71,7 +57,22 @@ class UserService {
             model: 'Profile',
             populate: {
               path: 'followers',
-            }
+            },
+          }
+        )
+        .populate(
+          {
+            path: 'profile',
+            model: 'Profile',
+            populate: {
+              path: 'bookmarks',
+              model: 'Article',
+              populate: {
+                path: 'author',
+                model: 'User'
+              },
+            },
+
           }
         );
       return user;
@@ -79,20 +80,6 @@ class UserService {
       throw error;
     }
   }
-
-  // /**
-  //  * checks if a user exists using an id
-  //   * @param {Object} identifier - the parameter used to identify the db
-  //   * @param {Object} toBeUpdated - the parameter to be updated on the db
-  //   * @returns {Object} user object or empty object
-  //   */
-  // static async update(identifier, toBeUpdated) {
-  //   try {
-  //     await User.updateOne(identifier, toBeUpdated);
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
 
   /**
    * find a user by username or email

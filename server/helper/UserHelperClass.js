@@ -53,7 +53,7 @@ class UserHelperClass {
  */
   static async validateUser(token) {
     const isTokenValid = TokenHelperClass.validateToken(token);
-    const userId = isTokenValid.decodedToken;
+    const { userId } = isTokenValid.decodedToken;
     const savedUser = await GeneralService
       .findById(User, userId);
     if (savedUser === null) throw new Error('User does not exist');
@@ -81,6 +81,36 @@ class UserHelperClass {
   }
 
   /**
+  * @param {String} type - if validating followerUser or unfollowUser
+  * @param {String} existingFollowing - optional message
+ * @returns {null} - null
+ */
+  static validateExistingFollowing(type, existingFollowing) {
+    if (type === 'follow' && existingFollowing) {
+      throw new Error('You are already following this user');
+    }
+    if (type === 'unfollow' && !existingFollowing) {
+      throw new Error('You are not following this user');
+    }
+  }
+
+
+  /**
+  * @param {String} type - if validating followerUser or unfollowUser
+  * @param {String} userBeingFollowedId - id of user being followed
+  * @param {String} followerId - id of follower
+ * @returns {null} - null
+ */
+  static validateSelfFollow(type, userBeingFollowedId, followerId) {
+    if (type === 'follow' && userBeingFollowedId === followerId) {
+      throw new Error('You cannot follow yourself');
+    }
+    if (type === 'unfollow' && userBeingFollowedId === followerId) {
+      throw new Error('You cannot unfollow yourself');
+    }
+  }
+
+  /**
   * @param {String} userBeingFollowedId - id of user being followed
   * @param {String} followerId - id of follower
   * @param {String} type - if validating followerUser or unfollowUser
@@ -91,18 +121,8 @@ class UserHelperClass {
       $and: [{ follower: followerId },
         { userBeingFollowed: userBeingFollowedId }]
     }));
-    if (type === 'follow' && existingFollowing) {
-      throw new Error('You are already following this user');
-    }
-    if (type === 'follow' && userBeingFollowedId === followerId) {
-      throw new Error('You cannot follow yourself');
-    }
-    if (type === 'unfollow' && !existingFollowing) {
-      throw new Error('You are not following this user');
-    }
-    if (type === 'unfollow' && userBeingFollowedId === followerId) {
-      throw new Error('You cannot unfollow yourself');
-    }
+    UserHelperClass.validateSelfFollow(type, userBeingFollowedId, followerId);
+    UserHelperClass.validateExistingFollowing(type, existingFollowing);
   }
 }
 

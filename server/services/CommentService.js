@@ -38,35 +38,6 @@ class CommentService {
     }
   }
 
-  // /**
-  //  * finds comment by id
-  //   * @param {String} id - the id of the comment
-  //   * @returns {null} returns null
-  //   */
-  // static async findCommentById(id) {
-  //   try {
-  //     const savedComment = await Comment.findById(id);
-  //     return savedComment;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
-
-  // /**
-  //  * finds and updates a comment by Id
-  //   * @param {String} id - id property of article
-  //   * @param {Object} fieldObjectToBeUpdated - the field to be updated
-  //   * @returns {null} returns null
-  //   */
-  // static async findOneAndUpdate(id, fieldObjectToBeUpdated) {
-  //   try {
-  //     await Comment.findOneAndUpdate({ _id: id },
-  //       { $push: fieldObjectToBeUpdated });
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
-
   /**
    * creates reply
     * @param {Object} replyObject - the object containing reply parameters
