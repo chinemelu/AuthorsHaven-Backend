@@ -98,6 +98,35 @@ class ArticleService {
       throw new Error(error.errors.body.message);
     }
   }
+
+  /**
+   * removes bookmark
+   * @param {String} userId - the id of the user in the token
+   * @param {String} articleId - the id of the article in the bookmark
+    * @param {Object} bookmarkObject - the object containing reply parameters
+    * @returns {Object} returns created reply
+    */
+  static async deleteBookmark(userId, articleId) {
+    let session = null;
+    try {
+      session = await GeneralService.startTransaction(Bookmark, session);
+      const createdBookmark = await GeneralService
+        .delete(Bookmark, ({
+          $and: [{ owner: userId },
+            { article: articleId }]
+        }));
+
+      await GeneralService
+        .findOneAndUpdate(UserProfile, {
+          owner: userId
+        }, { bookmarks: articleId }, 'pull');
+      await GeneralService.commitTransaction(session);
+      return createdBookmark;
+    } catch (error) {
+      await GeneralService.abortTransaction(session);
+      throw new Error(error.errors.body.message);
+    }
+  }
 }
 
 export default ArticleService;

@@ -17,6 +17,7 @@ const schema = buildSchema(`
     followUser(followInput: followUser): User
     unfollowUser(unfollowInput: followUser): User
     createBookmark(token: String!, articleId: String!): Article
+    deleteBookmark(token: String!, articleId: String!): Article
   }
 
   type Query {

@@ -121,7 +121,12 @@ const ArticleResolver = {
         BOOKMARK: constants.articleEnums.BOOKMARK
       };
       const result = await ArticleHelperClass
-        .validateInput(args.token, args.articleId, type);
+        .validateInput(
+          args.token,
+          args.articleId,
+          type,
+          constants.bookmarkEnums.CREATE
+        );
       const bookmarkObject = {
         article: args.articleId,
         owner: result.userId
@@ -129,6 +134,25 @@ const ArticleResolver = {
       const createdBookmark = await ArticleService
         .createBookmark(bookmarkObject);
       return createdBookmark;
+    } catch (error) {
+      throw error;
+    }
+  },
+  deleteBookmark: async (args) => {
+    try {
+      const type = {
+        BOOKMARK: constants.articleEnums.BOOKMARK
+      };
+      const result = await ArticleHelperClass
+        .validateInput(
+          args.token,
+          args.articleId,
+          type,
+          constants.bookmarkEnums.DELETE
+        );
+      const deletedBookmark = await ArticleService
+        .deleteBookmark(result.userId, args.articleId);
+      return deletedBookmark;
     } catch (error) {
       throw error;
     }

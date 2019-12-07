@@ -15,6 +15,10 @@ const constants = {
   articleEnums: Object.freeze({
     HAS_ACCESS: 'hasAccess',
     BOOKMARK: 'bookmark'
+  }),
+  bookmarkEnums: Object.freeze({
+    CREATE: 'create',
+    DELETE: 'delete'
   })
 };
 
