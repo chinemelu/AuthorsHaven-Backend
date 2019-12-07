@@ -66,14 +66,20 @@ class ArticleHelperClass {
    *
    * @param {String} articleId - the id of the article in the bookmark
    * @param {String} userId - the user trying to bookmark he article
+   * @param {String} bookmarkAction - 'create' or 'delete'
    * @returns {null} - null
    */
-  static async validateBookmark(articleId, userId) {
+  static async validateBookmark(articleId, userId, bookmarkAction) {
     const existingBookmark = await GeneralService.findOne(Bookmark, ({
       $and: [{ owner: userId },
         { article: articleId }]
     }));
-    if (existingBookmark) throw new Error('Bookmark already exists');
+    if (bookmarkAction === constants.bookmarkEnums.CREATE
+      && existingBookmark) throw new Error('Bookmark already exists');
+    if (bookmarkAction === constants.bookmarkEnums.DELETE
+       && !existingBookmark) {
+      throw new Error('Bookmark does not exist');
+    }
   }
 
   /**
@@ -95,12 +101,16 @@ class ArticleHelperClass {
    *@param {Array} typeArray - array containing validation to be performed
    * @param {String} articleId - the id of article to be bookmarked
    * @param {String} userId - the user in the token
+   *  @param {String} bookmarkAction - 'create' or 'delete'
    * @returns {null} - null
    */
-  static async checkIfBookmarkExists(typeArray, articleId, userId) {
+  static async checkIfBookmarkExists(
+    typeArray, articleId, userId, bookmarkAction
+  ) {
     const { articleEnums } = constants;
     if (typeArray.indexOf(articleEnums.BOOKMARK) > -1) {
-      await ArticleHelperClass.validateBookmark(articleId, userId);
+      await ArticleHelperClass
+        .validateBookmark(articleId, userId, bookmarkAction);
     }
   }
 
@@ -108,19 +118,19 @@ class ArticleHelperClass {
    * @param {String} token - the jwt token
    * @param {String} articleId - the id of the article
    * @param {Object} type - enumerated values determining validation to apply
+   * @param {String} bookmarkAction - 'create' or 'delete'
    * @returns {null} - null
    */
-  static async validateInput(token, articleId, type = {}) {
+  static async validateInput(token, articleId, type = {}, bookmarkAction = '') {
     try {
       const userId = await UserHelperClass.validateUser(token);
       const savedArticle = await ArticleHelperClass.validateArticle(articleId);
       const typeArray = Object.values(type);
-
       await ArticleHelperClass
         .checkIfUserHasAccess(typeArray, savedArticle, userId);
 
       await ArticleHelperClass
-        .checkIfBookmarkExists(typeArray, articleId, userId);
+        .checkIfBookmarkExists(typeArray, articleId, userId, bookmarkAction);
       return { userId, savedArticle };
     } catch (error) {
       throw error;
