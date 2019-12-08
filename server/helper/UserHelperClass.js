@@ -11,7 +11,22 @@ import Follower from '../models/follower';
  * Helper class for all things relating to users
  */
 class UserHelperClass {
-/**
+  /**
+   * @param {String} articleBody - body of the article being checked
+   * @returns {Number} - time taken to read
+   */
+  static timeToReadArticle(articleBody) {
+    try {
+      const wordsPerMinute = 200;
+      const articleBodyLength = articleBody.split(' ').length;
+      const timeToRead = articleBodyLength / wordsPerMinute;
+      return timeToRead;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
  * @param {Object} req - request object
  * @param {Object} res - response object
  * @returns {Object} - Object containing details of decoded token

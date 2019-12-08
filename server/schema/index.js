@@ -88,6 +88,7 @@ const schema = buildSchema(`
   type meta {
     votes: Int
     favs: Int
+    timeToRead: Float
   }
 
   input followUser {
