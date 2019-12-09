@@ -1,4 +1,9 @@
 import mongoose from 'mongoose';
+import UserHelperClass from '../helper/UserHelperClass';
+
+
+/* eslint no-underscore-dangle:
+ ["error", { "allow": ["_update"] }] */
 
 const articleSchema = new mongoose.Schema({
   title: {
@@ -24,12 +29,24 @@ const articleSchema = new mongoose.Schema({
   }],
   meta: {
     votes: Number,
+    timeToRead: Number,
     favs: Number
   }
 },
 {
   timestamps: true
 });
+
+articleSchema.pre('save', function preSave() {
+  this.meta.timeToRead = UserHelperClass.timeToReadArticle(this.body);
+});
+
+articleSchema.pre('updateOne', async function preUpdate() {
+  const updatedTimeToRead = UserHelperClass
+    .timeToReadArticle(this._update.body);
+  this.set({ articleToUpdate: { meta: { timeToRead: updatedTimeToRead } } });
+});
+
 
 const Article = mongoose.model('Article', articleSchema);
 
