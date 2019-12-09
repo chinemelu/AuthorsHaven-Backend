@@ -42,10 +42,9 @@ articleSchema.pre('save', function preSave() {
 });
 
 articleSchema.pre('updateOne', async function preUpdate() {
-  console.log('update', this._update);
   const updatedTimeToRead = UserHelperClass
     .timeToReadArticle(this._update.body);
-  this._update.meta.timeToRead = updatedTimeToRead;
+  this.set({ articleToUpdate: { meta: { timeToRead: updatedTimeToRead } } });
 });
 
 
