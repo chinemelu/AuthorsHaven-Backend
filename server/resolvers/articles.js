@@ -46,7 +46,10 @@ const ArticleResolver = {
       await GeneralService.update(Article, { _id: args._id }, {
         title: args.title || result.savedArticle.title,
         body: args.body || result.savedArticle.body,
-        images: args.images || result.savedArticle.images
+        images: args.images || result.savedArticle.images,
+        meta: {
+          timeToRead: UserHelperClass.timeToReadArticle(args.body)
+        }
       });
     } catch (error) {
       throw error;

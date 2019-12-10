@@ -41,13 +41,6 @@ articleSchema.pre('save', function preSave() {
   this.meta.timeToRead = UserHelperClass.timeToReadArticle(this.body);
 });
 
-articleSchema.pre('updateOne', async function preUpdate() {
-  const updatedTimeToRead = UserHelperClass
-    .timeToReadArticle(this._update.body);
-  this.set({ articleToUpdate: { meta: { timeToRead: updatedTimeToRead } } });
-});
-
-
 const Article = mongoose.model('Article', articleSchema);
 
 export default Article;
