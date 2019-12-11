@@ -159,6 +159,18 @@ const ArticleResolver = {
     } catch (error) {
       throw error;
     }
+  },
+  createRating: async (args) => {
+    try {
+      const result = await ArticleHelperClass
+        .validateInput(
+          args.token,
+          args.articleId,
+          constants.bookmarkEnums.DELETE
+        );
+    } catch (error) {
+      throw error;
+    }
   }
 };
 
