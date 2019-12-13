@@ -50,31 +50,22 @@ class UserService {
     */
   static async findByUsername(username) {
     try {
+      const firstPopulation = {
+        path: 'profile',
+        model: 'Profile',
+        populate: { path: 'followers' }
+      };
+      const secondPopulation = {
+        path: 'profile',
+        model: 'Profile',
+        populate: {
+          path: 'bookmarks',
+          model: 'Article',
+          populate: { path: 'author', model: 'User' },
+        },
+      };
       const user = await User.findOne({ username })
-        .populate(
-          {
-            path: 'profile',
-            model: 'Profile',
-            populate: {
-              path: 'followers',
-            },
-          }
-        )
-        .populate(
-          {
-            path: 'profile',
-            model: 'Profile',
-            populate: {
-              path: 'bookmarks',
-              model: 'Article',
-              populate: {
-                path: 'author',
-                model: 'User'
-              },
-            },
-
-          }
-        );
+        .populate(firstPopulation).populate(secondPopulation);
       return user;
     } catch (error) {
       throw error;

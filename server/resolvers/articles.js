@@ -162,12 +162,19 @@ const ArticleResolver = {
   },
   createRating: async (args) => {
     try {
+      args = args.ratingInput;
       const result = await ArticleHelperClass
         .validateInput(
           args.token,
           args.articleId,
-          constants.bookmarkEnums.DELETE
         );
+      await ArticleHelperClass.validateRating(args, result.userId);
+      const ratingObject = {
+        reviewer: result.userId,
+        article: args.articleId,
+        rating: args.rating
+      };
+      await ArticleService.createRating(ratingObject);
     } catch (error) {
       throw error;
     }

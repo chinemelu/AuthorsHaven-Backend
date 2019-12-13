@@ -60,6 +60,7 @@ const schema = buildSchema(`
     body: String
     author: User
     images: [String]
+    ratings: [Rating]
     createdAt: String
     updatedAt: String
     comments: [Comments!]!
@@ -93,15 +94,16 @@ const schema = buildSchema(`
   }
 
   type Rating {
-    reviewer: ID
-    rating: float
-    articleId: ID
+    _id: ID
+    reviewer: User
+    rating: Float
+    article: ID
   }
 
   input ratingInput {
     token: String!
     articleId: String!
-    rating: float
+    rating: Float
   }
   input followUser {
     token: String!

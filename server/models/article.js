@@ -27,7 +27,7 @@ const articleSchema = new mongoose.Schema({
     required: true,
     ref: 'Comment'
   }],
-  Ratings: [{
+  ratings: [{
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: 'Rating'
