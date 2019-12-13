@@ -18,6 +18,7 @@ const schema = buildSchema(`
     unfollowUser(unfollowInput: followUser): User
     createBookmark(token: String!, articleId: String!): Article
     deleteBookmark(token: String!, articleId: String!): Article
+    createRating(ratingInput: ratingInput): Rating
   }
 
   type Query {
@@ -59,6 +60,7 @@ const schema = buildSchema(`
     body: String
     author: User
     images: [String]
+    ratings: [Rating]
     createdAt: String
     updatedAt: String
     comments: [Comments!]!
@@ -91,6 +93,18 @@ const schema = buildSchema(`
     timeToRead: Float
   }
 
+  type Rating {
+    _id: ID
+    reviewer: User
+    rating: Float
+    article: ID
+  }
+
+  input ratingInput {
+    token: String!
+    articleId: String!
+    rating: Float
+  }
   input followUser {
     token: String!
     userId: ID!

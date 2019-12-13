@@ -1,9 +1,12 @@
 import Article from '../models/article';
 import Bookmark from '../models/bookmark';
+import Rating from '../models/rating';
 import UserProfile from '../models/userProfile';
 import GeneralService from './GeneralService';
 import GeneralHelperClass from '../helper/GeneralHelperClass';
 
+/* eslint no-underscore-dangle:
+ ["error", { "allow": ["_id", "_doc", "_session"] }] */
 
 /**
  * it handles all database calls with respect to an article
@@ -40,14 +43,14 @@ class ArticleService {
           {
             path: 'comments',
             model: 'Comment',
-            populate: {
-              path: 'replies',
-              populate: {
-                path: 'replies'
-              }
-            }
+            populate: { path: 'replies', populate: { path: 'replies' } }
           }
-        );
+        )
+        .populate({
+          path: 'ratings',
+          model: 'Rating',
+          populate: { path: 'reviewer', model: 'User' }
+        });
       return savedArticle;
     } catch (error) {
       throw error;
@@ -122,6 +125,38 @@ class ArticleService {
         }, { bookmarks: articleId }, 'pull');
       await GeneralService.commitTransaction(session);
       return createdBookmark;
+    } catch (error) {
+      await GeneralService.abortTransaction(session);
+      throw new Error(error.errors.body.message);
+    }
+  }
+
+  /**
+   * creates bookmark
+    * @param {Object} ratingObject - the object containing rating parameters
+    * @returns {Null} null
+    */
+  static async createRating(ratingObject) {
+    let session = null;
+    try {
+      session = await GeneralService.startTransaction(Bookmark, session);
+      const createRatingObject = {
+        reviewer: ratingObject.reviewer,
+        article: ratingObject.article,
+        rating: ratingObject.rating
+      };
+      const createdRating = await GeneralService
+        .create(Rating, createRatingObject);
+      const rating = {
+        _id: createdRating._id
+      };
+
+      await GeneralService
+        .findOneAndUpdate(Article, {
+          _id: ratingObject.article
+        }, { ratings: rating });
+      await GeneralService.commitTransaction(session);
+      return createdRating;
     } catch (error) {
       await GeneralService.abortTransaction(session);
       throw new Error(error.errors.body.message);

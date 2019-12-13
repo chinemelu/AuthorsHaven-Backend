@@ -27,6 +27,11 @@ const articleSchema = new mongoose.Schema({
     required: true,
     ref: 'Comment'
   }],
+  ratings: [{
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'Rating'
+  }],
   meta: {
     votes: Number,
     timeToRead: Number,

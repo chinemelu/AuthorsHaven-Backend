@@ -5,6 +5,7 @@ import GeneralHelperClass from './GeneralHelperClass';
 import Reply from '../models/reply';
 import Comment from '../models/comments';
 import Bookmark from '../models/bookmark';
+import Rating from '../models/rating';
 import constants from '../constants';
 
 /* eslint no-underscore-dangle:
@@ -83,6 +84,26 @@ class ArticleHelperClass {
   }
 
   /**
+   *
+   * @param {String} args - the argument object
+   * @param {String} userId - the user of a validated user in the token
+   * @returns {null} - null
+   */
+  static async validateRating(args, userId) {
+    const { rating } = args;
+    if (!rating) throw new Error('Please enter a rating');
+    const ratingIsInvalid = rating < 0 || rating > 5;
+    if (ratingIsInvalid) {
+      throw new Error('Please enter a rating between 0 and 5');
+    }
+    const existingRating = await GeneralService.findOne(Rating, ({
+      $and: [{ reviewer: userId },
+        { article: args.articleId }]
+    }));
+    if (existingRating) throw new Error('You have already rated this article');
+  }
+
+  /**
    *@param {Array} typeArray - array containing validation to be performed
    * @param {String} savedArticle - the article in the database
    * @param {String} userId - the user in the token
@@ -131,6 +152,7 @@ class ArticleHelperClass {
 
       await ArticleHelperClass
         .checkIfBookmarkExists(typeArray, articleId, userId, bookmarkAction);
+
       return { userId, savedArticle };
     } catch (error) {
       throw error;
