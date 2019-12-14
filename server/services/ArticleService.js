@@ -1,6 +1,7 @@
 import Article from '../models/article';
 import Bookmark from '../models/bookmark';
 import Rating from '../models/rating';
+import Like from '../models/like';
 import UserProfile from '../models/userProfile';
 import GeneralService from './GeneralService';
 import GeneralHelperClass from '../helper/GeneralHelperClass';
@@ -157,6 +158,34 @@ class ArticleService {
         }, { ratings: rating });
       await GeneralService.commitTransaction(session);
       return createdRating;
+    } catch (error) {
+      await GeneralService.abortTransaction(session);
+      throw new Error(error.errors.body.message);
+    }
+  }
+
+  /**
+   * add a like to an article
+    * @param {Object} likeObject - the object containing like parameters
+    * @returns {Null} null
+    */
+  static async addLikeToArticle(likeObject) {
+    let session = null;
+    try {
+      session = await GeneralService.startTransaction(Bookmark, session);
+      const createLikeObject = {
+        reviewer: likeObject.reviewer,
+        article: likeObject.article,
+      };
+      const createdLike = await GeneralService
+        .create(Like, createLikeObject);
+
+      await GeneralService
+        .findOneAndUpdate(Article, {
+          _id: likeObject.article
+        }, { $inc: { meta: { likes: 1 } } });
+      await GeneralService.commitTransaction(session);
+      return createdLike;
     } catch (error) {
       await GeneralService.abortTransaction(session);
       throw new Error(error.errors.body.message);

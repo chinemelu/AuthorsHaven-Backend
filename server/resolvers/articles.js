@@ -178,6 +178,23 @@ const ArticleResolver = {
     } catch (error) {
       throw error;
     }
+  },
+  addLikeToArticle: async (args) => {
+    try {
+      const result = await ArticleHelperClass
+        .validateInput(
+          args.token,
+          args.articleId,
+        );
+      await ArticleHelperClass.validateLike(args, result.userId, 'like');
+      const likeObject = {
+        article: args.articleId,
+        reviewer: result.userId
+      };
+      await ArticleService.addLikeToArticle(likeObject);
+    } catch (error) {
+      throw error;
+    }
   }
 };
 
