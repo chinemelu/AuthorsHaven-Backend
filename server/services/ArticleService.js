@@ -179,11 +179,10 @@ class ArticleService {
       };
       const createdLike = await GeneralService
         .create(Like, createLikeObject);
-
       await GeneralService
         .findOneAndUpdate(Article, {
           _id: likeObject.article
-        }, { $inc: { meta: { likes: 1 } } });
+        }, { 'meta.likes': 1 }, 'increment');
       await GeneralService.commitTransaction(session);
       return createdLike;
     } catch (error) {

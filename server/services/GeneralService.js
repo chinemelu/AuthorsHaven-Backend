@@ -39,6 +39,9 @@ class GeneralService {
       if (type === 'pull') {
         await Model.findOneAndUpdate(identifier,
           { $pull: fieldObjectToBeUpdated });
+      } else if (type === 'increment' || type === 'decrement') {
+        await Model.findOneAndUpdate(identifier,
+          { $inc: fieldObjectToBeUpdated });
       } else {
         await Model.findOneAndUpdate(identifier,
           { $push: fieldObjectToBeUpdated });
