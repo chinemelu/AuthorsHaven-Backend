@@ -33,9 +33,11 @@ const articleSchema = new mongoose.Schema({
     ref: 'Rating'
   }],
   meta: {
-    votes: Number,
+    likes: {
+      type: Number,
+      default: 0
+    },
     timeToRead: Number,
-    favs: Number
   }
 },
 {

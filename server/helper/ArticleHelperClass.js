@@ -6,6 +6,7 @@ import Reply from '../models/reply';
 import Comment from '../models/comments';
 import Bookmark from '../models/bookmark';
 import Rating from '../models/rating';
+import Like from '../models/like';
 import constants from '../constants';
 
 /* eslint no-underscore-dangle:
@@ -101,6 +102,26 @@ class ArticleHelperClass {
         { article: args.articleId }]
     }));
     if (existingRating) throw new Error('You have already rated this article');
+  }
+
+  /**
+   *
+   * @param {String} args - the argument object
+   * @param {String} userId - the user of a validated user in the token
+   * @param {String} type - whether like or unlike
+   * @returns {null} - null
+   */
+  static async validateLike(args, userId, type) {
+    const existingRating = await GeneralService.findOne(Like, ({
+      $and: [{ reviewer: userId },
+        { article: args.articleId }]
+    }));
+    if (type === 'like' && existingRating) {
+      throw new Error('You have already liked this article');
+    }
+    if (type === 'unlike' && !existingRating) {
+      throw new Error('You haven\'t liked this article');
+    }
   }
 
   /**

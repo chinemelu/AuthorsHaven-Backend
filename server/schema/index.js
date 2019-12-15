@@ -19,6 +19,7 @@ const schema = buildSchema(`
     createBookmark(token: String!, articleId: String!): Article
     deleteBookmark(token: String!, articleId: String!): Article
     createRating(ratingInput: ratingInput): Rating
+    addLikeToArticle(token: String!, articleId: String!): Like
   }
 
   type Query {
@@ -88,8 +89,7 @@ const schema = buildSchema(`
   }
 
   type meta {
-    votes: Int
-    favs: Int
+    likes: Int
     timeToRead: Float
   }
 
@@ -97,6 +97,12 @@ const schema = buildSchema(`
     _id: ID
     reviewer: User
     rating: Float
+    article: ID
+  }
+
+  type Like {
+    _id: ID
+    reviewer: User
     article: ID
   }
 
