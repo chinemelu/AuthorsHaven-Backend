@@ -195,6 +195,23 @@ const ArticleResolver = {
     } catch (error) {
       throw error;
     }
+  },
+  unlikeArticle: async (args) => {
+    try {
+      const result = await ArticleHelperClass
+        .validateInput(
+          args.token,
+          args.articleId,
+        );
+      await ArticleHelperClass.validateLike(args, result.userId, 'unlike');
+      const likeObject = {
+        article: args.articleId,
+        reviewer: result.userId
+      };
+      await ArticleService.unlikeArticle(likeObject);
+    } catch (error) {
+      throw error;
+    }
   }
 };
 

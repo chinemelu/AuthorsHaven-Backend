@@ -20,6 +20,7 @@ const schema = buildSchema(`
     deleteBookmark(token: String!, articleId: String!): Article
     createRating(ratingInput: ratingInput): Rating
     addLikeToArticle(token: String!, articleId: String!): Like
+    unlikeArticle(token: String!, articleId: String!): Like
   }
 
   type Query {
