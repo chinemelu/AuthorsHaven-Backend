@@ -190,6 +190,32 @@ class ArticleService {
       throw new Error(error.errors.body.message);
     }
   }
+
+  /**
+   * remove a like from an article
+    * @param {Object} likeObject - the object containing like parameters
+    * @returns {Null} null
+    */
+  static async unlikeArticle(likeObject) {
+    let session = null;
+    try {
+      session = await GeneralService.startTransaction(Bookmark, session);
+
+      await GeneralService
+        .delete(Like, {
+          $and: [{ reviewer: likeObject.reviewer },
+            { article: likeObject.article }]
+        });
+      await GeneralService
+        .findOneAndUpdate(Article, {
+          _id: likeObject.article
+        }, { 'meta.likes': -1 }, 'decrement');
+      await GeneralService.commitTransaction(session);
+    } catch (error) {
+      await GeneralService.abortTransaction(session);
+      throw new Error(error.errors.body.message);
+    }
+  }
 }
 
 export default ArticleService;
