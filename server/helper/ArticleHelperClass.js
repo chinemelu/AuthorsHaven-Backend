@@ -7,6 +7,7 @@ import Comment from '../models/comments';
 import Bookmark from '../models/bookmark';
 import Rating from '../models/rating';
 import Like from '../models/like';
+import Report from '../models/report';
 import constants from '../constants';
 
 /* eslint no-underscore-dangle:
@@ -175,6 +176,31 @@ class ArticleHelperClass {
         .checkIfBookmarkExists(typeArray, articleId, userId, bookmarkAction);
 
       return { userId, savedArticle };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * @param {String} reportType - the type of report
+   * @param {Object} result - object containing userId and articleId
+   * @returns {null} - null
+   */
+  static async validateReport(reportType, result) {
+    try {
+      if (!reportType) throw new Error('report Type is required');
+      const existingReport = await GeneralService.findOne(Report, ({
+        $and: [{ reporter: result.userId },
+          { article: result.savedArticle._id }]
+      }));
+      if (existingReport) {
+        throw new Error('You have already reported this article');
+      }
+      const reportTypeEnum = ['spam', 'harassment', 'violation'];
+      if (reportTypeEnum.indexOf(reportType.toLowerCase()) === -1) {
+        throw new Error('Report type should be one'
+        + ' of spam, harassment or violation');
+      }
     } catch (error) {
       throw error;
     }

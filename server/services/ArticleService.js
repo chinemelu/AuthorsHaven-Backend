@@ -3,6 +3,7 @@ import Bookmark from '../models/bookmark';
 import Rating from '../models/rating';
 import Like from '../models/like';
 import UserProfile from '../models/userProfile';
+import Report from '../models/report';
 import GeneralService from './GeneralService';
 import GeneralHelperClass from '../helper/GeneralHelperClass';
 
@@ -211,6 +212,38 @@ class ArticleService {
           _id: likeObject.article
         }, { 'meta.likes': -1 }, 'decrement');
       await GeneralService.commitTransaction(session);
+    } catch (error) {
+      await GeneralService.abortTransaction(session);
+      throw new Error(error.errors.body.message);
+    }
+  }
+
+  /**
+   * creates a report
+    * @param {Object} reportObject - the object containing report parameters
+    * @returns {Null} null
+    */
+  static async createReport(reportObject) {
+    let session = null;
+    try {
+      session = await GeneralService.startTransaction(Bookmark, session);
+      const createReportObject = {
+        reporter: reportObject.reporter,
+        article: reportObject.article,
+        reportType: reportObject.reportType
+      };
+      const createdReport = await GeneralService
+        .create(Report, createReportObject);
+      const report = {
+        _id: createdReport._id
+      };
+
+      await GeneralService
+        .findOneAndUpdate(Article, {
+          _id: reportObject.article
+        }, { reports: report });
+      await GeneralService.commitTransaction(session);
+      return createdReport;
     } catch (error) {
       await GeneralService.abortTransaction(session);
       throw new Error(error.errors.body.message);

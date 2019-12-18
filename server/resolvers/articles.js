@@ -212,6 +212,27 @@ const ArticleResolver = {
     } catch (error) {
       throw error;
     }
+  },
+  reportArticle: async (args) => {
+    try {
+      args = args.reportInput;
+      const result = await ArticleHelperClass
+        .validateInput(
+          args.token,
+          args.articleId,
+        );
+      await ArticleHelperClass.validateReport(args.reportType, result);
+      const reportObject = {
+        article: args.articleId,
+        reporter: result.userId,
+        reportType: args.reportType
+      };
+      const createdReport = await ArticleService.createReport(reportObject);
+      console.log('createdReport', createdReport);
+      return createdReport;
+    } catch (error) {
+      throw error;
+    }
   }
 };
 
