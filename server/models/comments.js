@@ -19,7 +19,13 @@ const commentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Reply',
     required: true
-  }]
+  }],
+  meta: {
+    likes: {
+      type: Number,
+      default: 0
+    },
+  }
 },
 {
   timestamps: true
