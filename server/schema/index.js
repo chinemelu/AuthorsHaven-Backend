@@ -22,6 +22,7 @@ const schema = buildSchema(`
     addLikeToArticle(token: String!, articleId: String!): Like
     unlikeArticle(token: String!, articleId: String!): Like
     reportArticle(reportInput: reportInput): Report
+    likeComment(token: String, commentId: ID, articleId: ID): Comments
   }
 
   type Query {
@@ -64,6 +65,7 @@ const schema = buildSchema(`
     author: User
     images: [String]
     ratings: [Rating]
+    likes: [Like]
     createdAt: String
     updatedAt: String
     reports: [Report]
@@ -76,6 +78,7 @@ const schema = buildSchema(`
     article: ID
     body: String!
     author: ID
+    likes: [Like]
     replies: [Replies]
     createdAt: String
     updatedAt: String

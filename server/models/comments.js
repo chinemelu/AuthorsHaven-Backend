@@ -20,6 +20,11 @@ const commentSchema = new mongoose.Schema({
     ref: 'Reply',
     required: true
   }],
+  likes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Like',
+    required: true
+  }],
   meta: {
     likes: {
       type: Number,

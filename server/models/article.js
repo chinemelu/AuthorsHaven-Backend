@@ -37,6 +37,10 @@ const articleSchema = new mongoose.Schema({
     required: true,
     ref: 'Report'
   }],
+  likes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Like'
+  }],
   meta: {
     likes: {
       type: Number,

@@ -113,15 +113,22 @@ class ArticleHelperClass {
    * @returns {null} - null
    */
   static async validateLike(args, userId, type) {
+    let objectArgument;
+    if (args.articleId) objectArgument = { article: args.articleId };
+    if (args.commentId) objectArgument = { comment: args.commentId };
     const existingRating = await GeneralService.findOne(Like, ({
       $and: [{ reviewer: userId },
-        { article: args.articleId }]
+        objectArgument
+      ]
     }));
     if (type === 'like' && existingRating) {
       throw new Error('You have already liked this article');
     }
     if (type === 'unlike' && !existingRating) {
       throw new Error('You haven\'t liked this article');
+    }
+    if (type === 'unlike' && existingRating) {
+      return existingRating._id;
     }
   }
 
