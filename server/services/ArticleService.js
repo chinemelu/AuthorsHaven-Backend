@@ -5,6 +5,7 @@ import Like from '../models/like';
 import UserProfile from '../models/userProfile';
 import Report from '../models/report';
 import Comment from '../models/comments';
+import Reply from '../models/reply';
 import GeneralService from './GeneralService';
 import GeneralHelperClass from '../helper/GeneralHelperClass';
 
@@ -41,25 +42,29 @@ class ArticleService {
     */
   static async findById(id) {
     try {
-      const savedArticle = await Article.findById(id)
-        .populate(
-          {
-            path: 'comments',
-            model: 'Comment',
-            populate: [{ path: 'replies', populate: { path: 'replies' } },
-              {
-                path: 'likes',
-                model: 'Like',
-                populate: { path: 'reviewer', model: 'User' }
-              }
-            ]
-          }
-        )
-        .populate({
-          path: 'ratings',
-          model: 'Rating',
+      const firstPopulation = {
+        path: 'comments',
+        model: 'Comment',
+        populate: [{
+          path: 'replies',
+          populate: [{ path: 'replies' }, {
+            path: 'likes', populate: { path: 'reviewer', model: 'User' }
+          }]
+        },
+        {
+          path: 'likes',
+          model: 'Like',
           populate: { path: 'reviewer', model: 'User' }
-        });
+        }]
+      };
+      const secondPopulation = {
+        path: 'ratings',
+        model: 'Rating',
+        populate: { path: 'reviewer', model: 'User' }
+      };
+      const savedArticle = await Article.findById(id)
+        .populate(firstPopulation)
+        .populate(secondPopulation);
       return savedArticle;
     } catch (error) {
       throw error;
@@ -266,7 +271,7 @@ class ArticleService {
   }
 
   /**
-   * creates a report
+   * likes a comment
     * @param {Object} likeCommentObject - object containing the like parameters
     * @returns {Null} null
     */
@@ -288,6 +293,38 @@ class ArticleService {
       await GeneralService
         .findOneAndUpdate(Comment, {
           _id: likeCommentObject.comment
+        }, { likes: createdLike._id });
+      await GeneralService.commitTransaction(session);
+      return createdLike;
+    } catch (error) {
+      await GeneralService.abortTransaction(session);
+      throw new Error(error.errors.body.message);
+    }
+  }
+
+  /**
+   * likes a reply
+    * @param {Object} likeReplyObject - object containing the like parameters
+    * @returns {Null} null
+    */
+  static async likeReply(likeReplyObject) {
+    let session = null;
+    try {
+      session = await GeneralService.startTransaction(Reply, session);
+      const createLikeObject = {
+        reply: likeReplyObject.reply,
+        reviewer: likeReplyObject.reviewer,
+        article: likeReplyObject.article,
+      };
+      const createdLike = await GeneralService
+        .create(Like, createLikeObject);
+      await GeneralService
+        .findOneAndUpdate(Reply, {
+          _id: likeReplyObject.reply
+        }, { 'meta.likes': 1 }, 'increment');
+      await GeneralService
+        .findOneAndUpdate(Reply, {
+          _id: likeReplyObject.reply
         }, { likes: createdLike._id });
       await GeneralService.commitTransaction(session);
       return createdLike;

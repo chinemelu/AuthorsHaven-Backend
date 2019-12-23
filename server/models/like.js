@@ -14,6 +14,10 @@ const likeSchema = new mongoose.Schema({
   comment: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Comment'
+  },
+  reply: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Reply'
   }
 },
 {

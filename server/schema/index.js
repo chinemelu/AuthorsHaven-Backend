@@ -23,6 +23,7 @@ const schema = buildSchema(`
     unlikeArticle(token: String!, articleId: String!): Like
     reportArticle(reportInput: reportInput): Report
     likeComment(token: String, commentId: ID, articleId: ID): Comments
+    likeReply(token: String, articleId: ID, replyId: ID): Replies
   }
 
   type Query {
@@ -39,10 +40,10 @@ const schema = buildSchema(`
   type User {
     _id: ID!
     token: String!
-    username: String!
+    username: String
     firstname: String
     lastname: String
-    email: String!
+    email: String
     isVerified: Boolean
     profile: Profile
     createdAt: String
@@ -89,8 +90,10 @@ const schema = buildSchema(`
     comment: ID
     author: ID
     article: ID
+    likes: [Like]
     replies: [Replies]
     body: String
+    meta: meta
     createdAt: String
   }
 

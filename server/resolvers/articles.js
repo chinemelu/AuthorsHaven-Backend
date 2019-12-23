@@ -250,6 +250,21 @@ const ArticleResolver = {
       throw error;
     }
   },
+  likeReply: async (args) => {
+    try {
+      const userId = await ArticleHelperClass
+        .validateCommentFields(args, 'reply');
+      await ArticleHelperClass.validateLike(args, userId, 'like');
+      const likeReplyObject = {
+        article: args.articleId,
+        reply: args.replyId,
+        reviewer: userId
+      };
+      await ArticleService.likeReply(likeReplyObject);
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export default ArticleResolver;
