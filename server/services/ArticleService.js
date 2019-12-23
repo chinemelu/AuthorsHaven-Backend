@@ -4,6 +4,8 @@ import Rating from '../models/rating';
 import Like from '../models/like';
 import UserProfile from '../models/userProfile';
 import Report from '../models/report';
+import Comment from '../models/comments';
+import Reply from '../models/reply';
 import GeneralService from './GeneralService';
 import GeneralHelperClass from '../helper/GeneralHelperClass';
 
@@ -40,19 +42,29 @@ class ArticleService {
     */
   static async findById(id) {
     try {
-      const savedArticle = await Article.findById(id)
-        .populate(
-          {
-            path: 'comments',
-            model: 'Comment',
-            populate: { path: 'replies', populate: { path: 'replies' } }
-          }
-        )
-        .populate({
-          path: 'ratings',
-          model: 'Rating',
+      const firstPopulation = {
+        path: 'comments',
+        model: 'Comment',
+        populate: [{
+          path: 'replies',
+          populate: [{ path: 'replies' }, {
+            path: 'likes', populate: { path: 'reviewer', model: 'User' }
+          }]
+        },
+        {
+          path: 'likes',
+          model: 'Like',
           populate: { path: 'reviewer', model: 'User' }
-        });
+        }]
+      };
+      const secondPopulation = {
+        path: 'ratings',
+        model: 'Rating',
+        populate: { path: 'reviewer', model: 'User' }
+      };
+      const savedArticle = await Article.findById(id)
+        .populate(firstPopulation)
+        .populate(secondPopulation);
       return savedArticle;
     } catch (error) {
       throw error;
@@ -141,7 +153,7 @@ class ArticleService {
   static async createRating(ratingObject) {
     let session = null;
     try {
-      session = await GeneralService.startTransaction(Bookmark, session);
+      session = await GeneralService.startTransaction(Rating, session);
       const createRatingObject = {
         reviewer: ratingObject.reviewer,
         article: ratingObject.article,
@@ -173,7 +185,7 @@ class ArticleService {
   static async addLikeToArticle(likeObject) {
     let session = null;
     try {
-      session = await GeneralService.startTransaction(Bookmark, session);
+      session = await GeneralService.startTransaction(Article, session);
       const createLikeObject = {
         reviewer: likeObject.reviewer,
         article: likeObject.article,
@@ -184,6 +196,10 @@ class ArticleService {
         .findOneAndUpdate(Article, {
           _id: likeObject.article
         }, { 'meta.likes': 1 }, 'increment');
+      await GeneralService
+        .findOneAndUpdate(Article, {
+          _id: likeObject.article
+        }, { likes: createdLike._id });
       await GeneralService.commitTransaction(session);
       return createdLike;
     } catch (error) {
@@ -200,7 +216,7 @@ class ArticleService {
   static async unlikeArticle(likeObject) {
     let session = null;
     try {
-      session = await GeneralService.startTransaction(Bookmark, session);
+      session = await GeneralService.startTransaction(Article, session);
 
       await GeneralService
         .delete(Like, {
@@ -211,6 +227,10 @@ class ArticleService {
         .findOneAndUpdate(Article, {
           _id: likeObject.article
         }, { 'meta.likes': -1 }, 'decrement');
+      await GeneralService
+        .findOneAndUpdate(Article, {
+          _id: likeObject.article
+        }, { likes: likeObject._id }, 'pull');
       await GeneralService.commitTransaction(session);
     } catch (error) {
       await GeneralService.abortTransaction(session);
@@ -226,7 +246,7 @@ class ArticleService {
   static async createReport(reportObject) {
     let session = null;
     try {
-      session = await GeneralService.startTransaction(Bookmark, session);
+      session = await GeneralService.startTransaction(Report, session);
       const createReportObject = {
         reporter: reportObject.reporter,
         article: reportObject.article,
@@ -244,6 +264,70 @@ class ArticleService {
         }, { reports: report });
       await GeneralService.commitTransaction(session);
       return createdReport;
+    } catch (error) {
+      await GeneralService.abortTransaction(session);
+      throw new Error(error.errors.body.message);
+    }
+  }
+
+  /**
+   * likes a comment
+    * @param {Object} likeCommentObject - object containing the like parameters
+    * @returns {Null} null
+    */
+  static async likeComment(likeCommentObject) {
+    let session = null;
+    try {
+      session = await GeneralService.startTransaction(Comment, session);
+      const createLikeObject = {
+        comment: likeCommentObject.comment,
+        reviewer: likeCommentObject.reviewer,
+        article: likeCommentObject.article,
+      };
+      const createdLike = await GeneralService
+        .create(Like, createLikeObject);
+      await GeneralService
+        .findOneAndUpdate(Comment, {
+          _id: likeCommentObject.comment
+        }, { 'meta.likes': 1 }, 'increment');
+      await GeneralService
+        .findOneAndUpdate(Comment, {
+          _id: likeCommentObject.comment
+        }, { likes: createdLike._id });
+      await GeneralService.commitTransaction(session);
+      return createdLike;
+    } catch (error) {
+      await GeneralService.abortTransaction(session);
+      throw new Error(error.errors.body.message);
+    }
+  }
+
+  /**
+   * likes a reply
+    * @param {Object} likeReplyObject - object containing the like parameters
+    * @returns {Null} null
+    */
+  static async likeReply(likeReplyObject) {
+    let session = null;
+    try {
+      session = await GeneralService.startTransaction(Reply, session);
+      const createLikeObject = {
+        reply: likeReplyObject.reply,
+        reviewer: likeReplyObject.reviewer,
+        article: likeReplyObject.article,
+      };
+      const createdLike = await GeneralService
+        .create(Like, createLikeObject);
+      await GeneralService
+        .findOneAndUpdate(Reply, {
+          _id: likeReplyObject.reply
+        }, { 'meta.likes': 1 }, 'increment');
+      await GeneralService
+        .findOneAndUpdate(Reply, {
+          _id: likeReplyObject.reply
+        }, { likes: createdLike._id });
+      await GeneralService.commitTransaction(session);
+      return createdLike;
     } catch (error) {
       await GeneralService.abortTransaction(session);
       throw new Error(error.errors.body.message);

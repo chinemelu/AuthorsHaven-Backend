@@ -112,16 +112,48 @@ class ArticleHelperClass {
    * @param {String} type - whether like or unlike
    * @returns {null} - null
    */
+  static checkIfArgumentIsArticleCommentOrReply(args) {
+    let objectArgument;
+    let textPlaceholder;
+    if (args.articleId) {
+      objectArgument = { article: args.articleId };
+      textPlaceholder = 'article';
+    }
+    if (args.commentId) {
+      objectArgument = { comment: args.commentId };
+      textPlaceholder = 'comment';
+    }
+    if (args.replyId) {
+      objectArgument = { reply: args.replyId };
+      textPlaceholder = 'reply';
+    }
+    return { objectArgument, textPlaceholder };
+  }
+
+  /**
+   *
+   * @param {String} args - the argument object
+   * @param {String} userId - the user of a validated user in the token
+   * @param {String} type - whether like or unlike
+   * @returns {null} - null
+   */
   static async validateLike(args, userId, type) {
+    const result = ArticleHelperClass
+      .checkIfArgumentIsArticleCommentOrReply(args);
     const existingRating = await GeneralService.findOne(Like, ({
       $and: [{ reviewer: userId },
-        { article: args.articleId }]
+        result.objectArgument
+      ]
     }));
+
     if (type === 'like' && existingRating) {
-      throw new Error('You have already liked this article');
+      throw new Error(`You have already liked this ${result.textPlaceholder}`);
     }
     if (type === 'unlike' && !existingRating) {
       throw new Error('You haven\'t liked this article');
+    }
+    if (type === 'unlike' && existingRating) {
+      return existingRating._id;
     }
   }
 

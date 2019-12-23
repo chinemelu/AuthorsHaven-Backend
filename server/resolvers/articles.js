@@ -203,8 +203,10 @@ const ArticleResolver = {
           args.token,
           args.articleId,
         );
-      await ArticleHelperClass.validateLike(args, result.userId, 'unlike');
+      const existingLikeId = await ArticleHelperClass
+        .validateLike(args, result.userId, 'unlike');
       const likeObject = {
+        _id: existingLikeId,
         article: args.articleId,
         reviewer: result.userId
       };
@@ -228,12 +230,41 @@ const ArticleResolver = {
         reportType: args.reportType
       };
       const createdReport = await ArticleService.createReport(reportObject);
-      console.log('createdReport', createdReport);
       return createdReport;
     } catch (error) {
       throw error;
     }
-  }
+  },
+  likeComment: async (args) => {
+    try {
+      const userId = await ArticleHelperClass
+        .validateCommentFields(args, 'comment');
+      await ArticleHelperClass.validateLike(args, userId, 'like');
+      const likeCommentObject = {
+        article: args.articleId,
+        comment: args.commentId,
+        reviewer: userId
+      };
+      await ArticleService.likeComment(likeCommentObject);
+    } catch (error) {
+      throw error;
+    }
+  },
+  likeReply: async (args) => {
+    try {
+      const userId = await ArticleHelperClass
+        .validateCommentFields(args, 'reply');
+      await ArticleHelperClass.validateLike(args, userId, 'like');
+      const likeReplyObject = {
+        article: args.articleId,
+        reply: args.replyId,
+        reviewer: userId
+      };
+      await ArticleService.likeReply(likeReplyObject);
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 export default ArticleResolver;
