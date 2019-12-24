@@ -1,6 +1,7 @@
 import Comment from '../models/comments';
 import Reply from '../models/reply';
 import Article from '../models/article';
+import Like from '../models/like';
 import GeneralService from './GeneralService';
 
 /* eslint no-underscore-dangle:
@@ -93,6 +94,70 @@ class CommentService {
         .findOneAndUpdate(Reply, replyObject.replyId, { replies: reply });
       await GeneralService.commitTransaction(session);
       return createdReply;
+    } catch (error) {
+      await GeneralService.abortTransaction(session);
+      throw new Error(error.errors.body.message);
+    }
+  }
+
+  /**
+   * likes a comment
+    * @param {Object} likeCommentObject - object containing the like parameters
+    * @returns {Null} null
+    */
+  static async likeComment(likeCommentObject) {
+    let session = null;
+    try {
+      session = await GeneralService.startTransaction(Comment, session);
+      const createLikeObject = {
+        comment: likeCommentObject.comment,
+        reviewer: likeCommentObject.reviewer,
+        article: likeCommentObject.article,
+      };
+      const createdLike = await GeneralService
+        .create(Like, createLikeObject);
+      await GeneralService
+        .findOneAndUpdate(Comment, {
+          _id: likeCommentObject.comment
+        }, { 'meta.likes': 1 }, 'increment');
+      await GeneralService
+        .findOneAndUpdate(Comment, {
+          _id: likeCommentObject.comment
+        }, { likes: createdLike._id });
+      await GeneralService.commitTransaction(session);
+      return createdLike;
+    } catch (error) {
+      await GeneralService.abortTransaction(session);
+      throw new Error(error.errors.body.message);
+    }
+  }
+
+  /**
+   * likes a reply
+    * @param {Object} likeReplyObject - object containing the like parameters
+    * @returns {Null} null
+    */
+  static async likeReply(likeReplyObject) {
+    let session = null;
+    try {
+      session = await GeneralService.startTransaction(Reply, session);
+      const createLikeObject = {
+        reply: likeReplyObject.reply,
+        reviewer: likeReplyObject.reviewer,
+        article: likeReplyObject.article,
+      };
+      const createdLike = await GeneralService
+        .create(Like, createLikeObject);
+      await GeneralService
+        .findOneAndUpdate(Reply, {
+          _id: likeReplyObject.reply
+        }, { 'meta.likes': 1 }, 'increment');
+      await GeneralService
+        .findOneAndUpdate(Reply, {
+          _id: likeReplyObject.reply
+        }, { likes: createdLike._id });
+      await GeneralService.commitTransaction(session);
+      return createdLike;
     } catch (error) {
       await GeneralService.abortTransaction(session);
       throw new Error(error.errors.body.message);

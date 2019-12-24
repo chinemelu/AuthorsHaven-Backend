@@ -1,6 +1,5 @@
 import ArticleService from '../services/ArticleService';
 import GeneralService from '../services/GeneralService';
-import CommentService from '../services/CommentService';
 import UserHelperClass from '../helper/UserHelperClass';
 import ArticleHelperClass from '../helper/ArticleHelperClass';
 import Article from '../models/article';
@@ -64,98 +63,6 @@ const ArticleResolver = {
       await ArticleHelperClass
         .validateInput(args.token, args._id, type);
       await ArticleService.delete(args._id);
-    } catch (error) {
-      throw error;
-    }
-  },
-  addComment: async (args) => {
-    try {
-      args = args.commentInput;
-      const result = await ArticleHelperClass
-        .validateInput(args.token, args.articleId);
-      const commentObject = {
-        articleId: args.articleId,
-        body: args.commentBody,
-        author: result.userId
-      };
-      const addedComment = await CommentService.create(commentObject);
-      return addedComment[0];
-    } catch (error) {
-      throw error;
-    }
-  },
-  addReplyToComment: async (args) => {
-    try {
-      args = args.replyToCommentInput;
-      const userId = await ArticleHelperClass
-        .validateCommentFields(args, 'comment');
-      const replyObject = {
-        body: args.replyBody,
-        author: userId,
-        commentId: args.commentId,
-        articleId: args.articleId
-      };
-      const addedReply = await CommentService.replyToComment(replyObject);
-      return addedReply;
-    } catch (error) {
-      throw error;
-    }
-  },
-  addReplyToReply: async (args) => {
-    try {
-      args = args.replyToReplyInput;
-      const userId = await ArticleHelperClass
-        .validateCommentFields(args, 'reply');
-      const replyObject = {
-        body: args.replyBody,
-        author: userId,
-        replyId: args.replyId,
-        articleId: args.articleId
-      };
-      const addedReply = await CommentService.replyToReply(replyObject);
-      return addedReply;
-    } catch (error) {
-      throw error;
-    }
-  },
-  createBookmark: async (args) => {
-    try {
-      const type = {
-        BOOKMARK: constants.articleEnums.BOOKMARK
-      };
-      const result = await ArticleHelperClass
-        .validateInput(
-          args.token,
-          args.articleId,
-          type,
-          constants.bookmarkEnums.CREATE
-        );
-      const bookmarkObject = {
-        article: args.articleId,
-        owner: result.userId
-      };
-      const createdBookmark = await ArticleService
-        .createBookmark(bookmarkObject);
-      return createdBookmark;
-    } catch (error) {
-      throw error;
-    }
-  },
-  deleteBookmark: async (args) => {
-    try {
-      const type = {
-        BOOKMARK: constants.articleEnums.BOOKMARK
-      };
-      const result = await ArticleHelperClass
-        .validateInput(
-          args.token,
-          args.articleId,
-          type,
-          constants.bookmarkEnums.DELETE
-        );
-      const deletedBookmark = await ArticleService
-        .deleteBookmark(result.userId, args.articleId);
-      return deletedBookmark;
     } catch (error) {
       throw error;
     }
@@ -231,36 +138,6 @@ const ArticleResolver = {
       };
       const createdReport = await ArticleService.createReport(reportObject);
       return createdReport;
-    } catch (error) {
-      throw error;
-    }
-  },
-  likeComment: async (args) => {
-    try {
-      const userId = await ArticleHelperClass
-        .validateCommentFields(args, 'comment');
-      await ArticleHelperClass.validateLike(args, userId, 'like');
-      const likeCommentObject = {
-        article: args.articleId,
-        comment: args.commentId,
-        reviewer: userId
-      };
-      await ArticleService.likeComment(likeCommentObject);
-    } catch (error) {
-      throw error;
-    }
-  },
-  likeReply: async (args) => {
-    try {
-      const userId = await ArticleHelperClass
-        .validateCommentFields(args, 'reply');
-      await ArticleHelperClass.validateLike(args, userId, 'like');
-      const likeReplyObject = {
-        article: args.articleId,
-        reply: args.replyId,
-        reviewer: userId
-      };
-      await ArticleService.likeReply(likeReplyObject);
     } catch (error) {
       throw error;
     }
