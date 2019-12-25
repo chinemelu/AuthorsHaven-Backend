@@ -1,4 +1,5 @@
 import CommentService from '../services/CommentService';
+import CommentHelperClass from '../helper/CommentHelperClass';
 import ArticleHelperClass from '../helper/ArticleHelperClass';
 
 /* eslint no-underscore-dangle: ["error", { "allow": ["_id", "_doc"] }] */
@@ -25,8 +26,7 @@ const CommentResolver = {
   },
   addReplyToComment: async (args) => {
     try {
-      args = args.replyToCommentInput;
-      const userId = await ArticleHelperClass
+      const userId = await CommentHelperClass
         .validateCommentFields(args, 'comment');
       const replyObject = {
         body: args.replyBody,
@@ -42,8 +42,7 @@ const CommentResolver = {
   },
   addReplyToReply: async (args) => {
     try {
-      args = args.replyToReplyInput;
-      const userId = await ArticleHelperClass
+      const userId = await CommentHelperClass
         .validateCommentFields(args, 'reply');
       const replyObject = {
         body: args.replyBody,
@@ -59,9 +58,8 @@ const CommentResolver = {
   },
   likeComment: async (args) => {
     try {
-      const userId = await ArticleHelperClass
-        .validateCommentFields(args, 'comment');
-      await ArticleHelperClass.validateLike(args, userId, 'like');
+      const userId = await CommentHelperClass
+        .validateLikeCommentFields(args, 'comment', 'like');
       const likeCommentObject = {
         article: args.articleId,
         comment: args.commentId,
@@ -74,9 +72,8 @@ const CommentResolver = {
   },
   likeReply: async (args) => {
     try {
-      const userId = await ArticleHelperClass
-        .validateCommentFields(args, 'reply');
-      await ArticleHelperClass.validateLike(args, userId, 'like');
+      const userId = await CommentHelperClass
+        .validateLikeCommentFields(args, 'reply', 'like');
       const likeReplyObject = {
         article: args.articleId,
         reply: args.replyId,
