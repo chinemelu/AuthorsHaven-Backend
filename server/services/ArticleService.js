@@ -1,11 +1,8 @@
 import Article from '../models/article';
-import Bookmark from '../models/bookmark';
 import Rating from '../models/rating';
 import Like from '../models/like';
-import UserProfile from '../models/userProfile';
 import Report from '../models/report';
-import Comment from '../models/comments';
-import Reply from '../models/reply';
+
 import GeneralService from './GeneralService';
 import GeneralHelperClass from '../helper/GeneralHelperClass';
 
@@ -47,9 +44,7 @@ class ArticleService {
         model: 'Comment',
         populate: [{
           path: 'replies',
-          populate: [{ path: 'replies' }, {
-            path: 'likes', populate: { path: 'reviewer', model: 'User' }
-          }]
+          populate: [{ path: 'replies' }]
         },
         {
           path: 'likes',
@@ -62,8 +57,7 @@ class ArticleService {
         model: 'Rating',
         populate: { path: 'reviewer', model: 'User' }
       };
-      const savedArticle = await Article.findById(id)
-        .populate(firstPopulation)
+      const savedArticle = await Article.findById(id).populate(firstPopulation)
         .populate(secondPopulation);
       return savedArticle;
     } catch (error) {
@@ -85,68 +79,7 @@ class ArticleService {
   }
 
   /**
-   * creates bookmark
-    * @param {Object} bookmarkObject - the object containing reply parameters
-    * @returns {Object} returns created reply
-    */
-  static async createBookmark(bookmarkObject) {
-    let session = null;
-    try {
-      session = await GeneralService.startTransaction(Bookmark, session);
-      const createBookmarkObject = {
-        owner: bookmarkObject.owner,
-        article: bookmarkObject.article
-      };
-      const createdBookmark = await GeneralService
-        .create(Bookmark, createBookmarkObject);
-
-      const bookmark = {
-        _id: bookmarkObject.article
-      };
-
-      await GeneralService
-        .findOneAndUpdate(UserProfile, {
-          owner: bookmarkObject.owner
-        }, { bookmarks: bookmark });
-      await GeneralService.commitTransaction(session);
-      return createdBookmark;
-    } catch (error) {
-      await GeneralService.abortTransaction(session);
-      throw new Error(error.errors.body.message);
-    }
-  }
-
-  /**
-   * removes bookmark
-   * @param {String} userId - the id of the user in the token
-   * @param {String} articleId - the id of the article in the bookmark
-    * @param {Object} bookmarkObject - the object containing reply parameters
-    * @returns {Object} returns created reply
-    */
-  static async deleteBookmark(userId, articleId) {
-    let session = null;
-    try {
-      session = await GeneralService.startTransaction(Bookmark, session);
-      const createdBookmark = await GeneralService
-        .delete(Bookmark, ({
-          $and: [{ owner: userId },
-            { article: articleId }]
-        }));
-
-      await GeneralService
-        .findOneAndUpdate(UserProfile, {
-          owner: userId
-        }, { bookmarks: articleId }, 'pull');
-      await GeneralService.commitTransaction(session);
-      return createdBookmark;
-    } catch (error) {
-      await GeneralService.abortTransaction(session);
-      throw new Error(error.errors.body.message);
-    }
-  }
-
-  /**
-   * creates bookmark
+   * creates rating
     * @param {Object} ratingObject - the object containing rating parameters
     * @returns {Null} null
     */
@@ -264,70 +197,6 @@ class ArticleService {
         }, { reports: report });
       await GeneralService.commitTransaction(session);
       return createdReport;
-    } catch (error) {
-      await GeneralService.abortTransaction(session);
-      throw new Error(error.errors.body.message);
-    }
-  }
-
-  /**
-   * likes a comment
-    * @param {Object} likeCommentObject - object containing the like parameters
-    * @returns {Null} null
-    */
-  static async likeComment(likeCommentObject) {
-    let session = null;
-    try {
-      session = await GeneralService.startTransaction(Comment, session);
-      const createLikeObject = {
-        comment: likeCommentObject.comment,
-        reviewer: likeCommentObject.reviewer,
-        article: likeCommentObject.article,
-      };
-      const createdLike = await GeneralService
-        .create(Like, createLikeObject);
-      await GeneralService
-        .findOneAndUpdate(Comment, {
-          _id: likeCommentObject.comment
-        }, { 'meta.likes': 1 }, 'increment');
-      await GeneralService
-        .findOneAndUpdate(Comment, {
-          _id: likeCommentObject.comment
-        }, { likes: createdLike._id });
-      await GeneralService.commitTransaction(session);
-      return createdLike;
-    } catch (error) {
-      await GeneralService.abortTransaction(session);
-      throw new Error(error.errors.body.message);
-    }
-  }
-
-  /**
-   * likes a reply
-    * @param {Object} likeReplyObject - object containing the like parameters
-    * @returns {Null} null
-    */
-  static async likeReply(likeReplyObject) {
-    let session = null;
-    try {
-      session = await GeneralService.startTransaction(Reply, session);
-      const createLikeObject = {
-        reply: likeReplyObject.reply,
-        reviewer: likeReplyObject.reviewer,
-        article: likeReplyObject.article,
-      };
-      const createdLike = await GeneralService
-        .create(Like, createLikeObject);
-      await GeneralService
-        .findOneAndUpdate(Reply, {
-          _id: likeReplyObject.reply
-        }, { 'meta.likes': 1 }, 'increment');
-      await GeneralService
-        .findOneAndUpdate(Reply, {
-          _id: likeReplyObject.reply
-        }, { likes: createdLike._id });
-      await GeneralService.commitTransaction(session);
-      return createdLike;
     } catch (error) {
       await GeneralService.abortTransaction(session);
       throw new Error(error.errors.body.message);

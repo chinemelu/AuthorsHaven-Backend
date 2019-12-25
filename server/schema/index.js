@@ -12,10 +12,12 @@ const schema = buildSchema(`
     updateArticle(updateArticleInput: UpdateArticleInput): Article
     deleteArticle(deleteArticleInput: DeleteArticleInput): Article
     addComment(commentInput: commentInput): Comments!
-    addReplyToComment(replyToCommentInput: replyInput): Comments!
-    addReplyToReply(replyToReplyInput: replyToReplyInput): Comments!
-    followUser(followInput: followUser): User
-    unfollowUser(unfollowInput: followUser): User
+    addReplyToComment(replyBody: String, token: String, commentId:ID
+      articleId: ID): Comments!
+    addReplyToReply(replyBody: String, token: String, replyId:ID, 
+      articleId: ID): Comments!
+    followUser(token: String!, userId: ID!): User
+    unfollowUser(token: String!, userId: ID!): User
     createBookmark(token: String!, articleId: String!): Article
     deleteBookmark(token: String!, articleId: String!): Article
     createRating(ratingInput: ratingInput): Rating
@@ -133,10 +135,6 @@ const schema = buildSchema(`
     articleId: String!
     rating: Float
   }
-  input followUser {
-    token: String!
-    userId: ID!
-  }
 
   input ArticleInput {
     title: String
@@ -150,19 +148,6 @@ const schema = buildSchema(`
     articleId: ID
   }
 
-  input replyInput {
-    replyBody: String
-    token: String
-    commentId : ID
-    articleId: ID
-  }
-
-  input replyToReplyInput {
-    replyBody: String
-    token: String
-    replyId : ID
-    articleId: ID
-  }
   input UpdateArticleInput {
     _id: ID
     token: String!
