@@ -25,6 +25,8 @@ const schema = buildSchema(`
     unlikeArticle(token: String!, articleId: String!): Like
     reportArticle(reportInput: reportInput): Report
     likeComment(token: String, commentId: ID, articleId: ID): Comments
+    unlikeReply(token: String, articleId: ID, replyId: ID): Replies
+    unlikeComment(token: String, commentId: ID, articleId: ID): Comments
     likeReply(token: String, articleId: ID, replyId: ID): Replies
   }
 
