@@ -58,8 +58,9 @@ class CommentHelperClass {
   static async validateLikeCommentFields(args, commentType, likeType) {
     const userId = await CommentHelperClass
       .validateCommentFields(args, commentType);
-    await ArticleHelperClass.validateLike(args, userId, likeType);
-    return userId;
+    const existingLikeId = await ArticleHelperClass
+      .validateLike(args, userId, likeType);
+    return { userId, existingLikeId };
   }
 }
 

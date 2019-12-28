@@ -14,10 +14,8 @@ class FollowerService {
     * @returns {Object} savedUser
     */
   static async create(followerObject) {
-    let session = null;
+    const session = await GeneralService.startTransaction(Follower);
     try {
-      session = await GeneralService.startTransaction(Follower, session);
-
       const createdFollower = await GeneralService
         .create(Follower, followerObject);
 
@@ -43,10 +41,8 @@ class FollowerService {
     * @returns {Object} savedUser
     */
   static async delete(followerObject) {
-    let session = null;
+    const session = await GeneralService.startTransaction(Follower);
     try {
-      session = await GeneralService.startTransaction(Follower, session);
-
       await GeneralService
         .delete(Follower, ({
           $and: [{ follower: followerObject.follower },

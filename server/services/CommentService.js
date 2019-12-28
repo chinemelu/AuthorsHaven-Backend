@@ -17,9 +17,8 @@ class CommentService {
     * @returns {Object} returns created comment
     */
   static async create(commentObject) {
-    let session = null;
+    const session = await GeneralService.startTransaction(Comment);
     try {
-      session = await GeneralService.startTransaction(Comment, session);
       const createdComment = await Comment.create([{
         body: commentObject.body,
         author: commentObject.author,
@@ -45,9 +44,8 @@ class CommentService {
     * @returns {Object} returns created reply
     */
   static async replyToComment(replyObject) {
-    let session = null;
+    const session = await GeneralService.startTransaction(Reply);
     try {
-      session = await GeneralService.startTransaction(Reply, session);
       const createReplyObject = {
         body: replyObject.body,
         author: replyObject.author,
@@ -76,9 +74,8 @@ class CommentService {
     * @returns {Object} returns created reply
     */
   static async replyToReply(replyObject) {
-    let session = null;
+    const session = await GeneralService.startTransaction(Reply);
     try {
-      session = await GeneralService.startTransaction(Reply, session);
       const createReplyObject = {
         body: replyObject.body,
         author: replyObject.author,
@@ -106,9 +103,8 @@ class CommentService {
     * @returns {Null} null
     */
   static async likeComment(likeCommentObject) {
-    let session = null;
+    const session = await GeneralService.startTransaction(Comment);
     try {
-      session = await GeneralService.startTransaction(Comment, session);
       const createLikeObject = {
         comment: likeCommentObject.comment,
         reviewer: likeCommentObject.reviewer,
@@ -133,14 +129,41 @@ class CommentService {
   }
 
   /**
+   * unlikes a comment
+    * @param {Object} unlikeCommentObject - object containing the unlike params
+    * @returns {Null} null
+    */
+  static async unlikeComment(unlikeCommentObject) {
+    const session = await GeneralService.startTransaction(Comment);
+    try {
+      await GeneralService
+        .delete(Like, ({
+          $and: [{ reviewer: unlikeCommentObject.reviewer },
+            { comment: unlikeCommentObject.comment }]
+        }));
+      await GeneralService
+        .findOneAndUpdate(Comment, {
+          _id: unlikeCommentObject.comment
+        }, { 'meta.likes': -1 }, 'decrement');
+      await GeneralService
+        .findOneAndUpdate(Comment, {
+          _id: unlikeCommentObject.comment
+        }, { likes: unlikeCommentObject.existingLikeId }, 'pull');
+      await GeneralService.commitTransaction(session);
+    } catch (error) {
+      await GeneralService.abortTransaction(session);
+      throw new Error(error.errors.body.message);
+    }
+  }
+
+  /**
    * likes a reply
     * @param {Object} likeReplyObject - object containing the like parameters
     * @returns {Null} null
     */
   static async likeReply(likeReplyObject) {
-    let session = null;
+    const session = await GeneralService.startTransaction(Reply);
     try {
-      session = await GeneralService.startTransaction(Reply, session);
       const createLikeObject = {
         reply: likeReplyObject.reply,
         reviewer: likeReplyObject.reviewer,
@@ -158,6 +181,34 @@ class CommentService {
         }, { likes: createdLike._id });
       await GeneralService.commitTransaction(session);
       return createdLike;
+    } catch (error) {
+      await GeneralService.abortTransaction(session);
+      throw new Error(error.errors.body.message);
+    }
+  }
+
+  /**
+   * unlikes a reply
+    * @param {Object} unlikeReplyObject - object containing unlike parameters
+    * @returns {Null} null
+    */
+  static async unlikeReply(unlikeReplyObject) {
+    const session = await GeneralService.startTransaction(Reply);
+    try {
+      await GeneralService
+        .delete(Like, ({
+          $and: [{ reviewer: unlikeReplyObject.reviewer },
+            { reply: unlikeReplyObject.reply }]
+        }));
+      await GeneralService
+        .findOneAndUpdate(Reply, {
+          _id: unlikeReplyObject.reply
+        }, { 'meta.likes': -1 }, 'decrement');
+      await GeneralService
+        .findOneAndUpdate(Reply, {
+          _id: unlikeReplyObject.reply
+        }, { likes: unlikeReplyObject.existingLikeId }, 'pull');
+      await GeneralService.commitTransaction(session);
     } catch (error) {
       await GeneralService.abortTransaction(session);
       throw new Error(error.errors.body.message);

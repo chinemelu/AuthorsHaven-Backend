@@ -15,9 +15,8 @@ class BookmarkService {
     * @returns {Object} returns created reply
     */
   static async createBookmark(bookmarkObject) {
-    let session = null;
+    const session = await GeneralService.startTransaction(Bookmark);
     try {
-      session = await GeneralService.startTransaction(Bookmark, session);
       const createBookmarkObject = {
         owner: bookmarkObject.owner,
         article: bookmarkObject.article
@@ -49,9 +48,8 @@ class BookmarkService {
     * @returns {Object} returns created reply
     */
   static async deleteBookmark(userId, articleId) {
-    let session = null;
+    const session = await GeneralService.startTransaction(Bookmark);
     try {
-      session = await GeneralService.startTransaction(Bookmark, session);
       const createdBookmark = await GeneralService
         .delete(Bookmark, ({
           $and: [{ owner: userId },

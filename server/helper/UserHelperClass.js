@@ -139,6 +139,21 @@ class UserHelperClass {
     UserHelperClass.validateSelfFollow(type, userBeingFollowedId, followerId);
     UserHelperClass.validateExistingFollowing(type, existingFollowing);
   }
+
+  /**
+  * @param {Object} args - the graphQL argument object
+  * @param {String} followType - follow or unfollow
+  * @param {String} validationMessage - the error message on validation
+ * @returns {null} - null
+ */
+  static async validateFollowerInput(args, followType, validationMessage) {
+    const userId = await UserHelperClass
+      .validateTwoUsers(args.token, args.userId,
+        validationMessage);
+    await UserHelperClass
+      .validateFollower(args.userId, userId, followType);
+    return userId;
+  }
 }
 
 export default UserHelperClass;

@@ -83,6 +83,7 @@ const schema = buildSchema(`
     article: ID
     body: String!
     author: ID
+    meta: meta
     likes: [Like]
     replies: [Replies]
     createdAt: String
