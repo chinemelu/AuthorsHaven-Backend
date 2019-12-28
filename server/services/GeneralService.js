@@ -86,12 +86,14 @@ class GeneralService {
    * @param {Object} session - transaction session
     * @returns {Object} user object or empty object
     */
-  static async startTransaction(Model, session) {
+  static async startTransaction(Model) {
+    let session = null;
     const _session = await Model.startSession();
     session = _session;
     session.startTransaction();
     return session;
   }
+
 
   /**
    * commits a transaction

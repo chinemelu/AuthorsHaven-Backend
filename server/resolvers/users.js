@@ -106,27 +106,21 @@ const UserResolver = {
   },
   followUser: async (args) => {
     const userId = await UserHelperClass
-      .validateTwoUsers(args.token, args.userId,
+      .validateFollowerInput(args, 'follow',
         'The user you are trying to follow does not exist');
-    await UserHelperClass
-      .validateFollower(args.userId, userId, 'follow');
-    const followerObject = {
+    await FollowerService.create({
       follower: userId,
       userBeingFollowed: args.userId
-    };
-    await FollowerService.create(followerObject);
+    });
   },
   unfollowUser: async (args) => {
     const userId = await UserHelperClass
-      .validateTwoUsers(args.token, args.userId,
+      .validateFollowerInput(args, 'unfollow',
         'The user you are trying to unfollow does not exist');
-    await UserHelperClass
-      .validateFollower(args.userId, userId, 'unfollow');
-    const followerObject = {
+    await FollowerService.delete({
       follower: userId,
       userBeingFollowed: args.userId
-    };
-    await FollowerService.delete(followerObject);
+    });
   }
 };
 

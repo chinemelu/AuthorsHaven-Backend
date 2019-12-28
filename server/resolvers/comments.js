@@ -13,12 +13,11 @@ const CommentResolver = {
       args = args.commentInput;
       const result = await ArticleHelperClass
         .validateInput(args.token, args.articleId);
-      const commentObject = {
+      const addedComment = await CommentService.create({
         articleId: args.articleId,
         body: args.commentBody,
         author: result.userId
-      };
-      const addedComment = await CommentService.create(commentObject);
+      });
       return addedComment[0];
     } catch (error) {
       throw error;
@@ -28,13 +27,12 @@ const CommentResolver = {
     try {
       const userId = await CommentHelperClass
         .validateCommentFields(args, 'comment');
-      const replyObject = {
+      const addedReply = await CommentService.replyToComment({
         body: args.replyBody,
         author: userId,
         commentId: args.commentId,
         articleId: args.articleId
-      };
-      const addedReply = await CommentService.replyToComment(replyObject);
+      });
       return addedReply;
     } catch (error) {
       throw error;
@@ -44,13 +42,12 @@ const CommentResolver = {
     try {
       const userId = await CommentHelperClass
         .validateCommentFields(args, 'reply');
-      const replyObject = {
+      const addedReply = await CommentService.replyToReply({
         body: args.replyBody,
         author: userId,
         replyId: args.replyId,
         articleId: args.articleId
-      };
-      const addedReply = await CommentService.replyToReply(replyObject);
+      });
       return addedReply;
     } catch (error) {
       throw error;
@@ -58,32 +55,59 @@ const CommentResolver = {
   },
   likeComment: async (args) => {
     try {
-      const userId = await CommentHelperClass
+      const result = await CommentHelperClass
         .validateLikeCommentFields(args, 'comment', 'like');
-      const likeCommentObject = {
+      await CommentService.likeComment({
         article: args.articleId,
         comment: args.commentId,
-        reviewer: userId
-      };
-      await CommentService.likeComment(likeCommentObject);
+        reviewer: result.userId
+      });
+    } catch (error) {
+      throw error;
+    }
+  },
+  unlikeComment: async (args) => {
+    try {
+      const result = await CommentHelperClass
+        .validateLikeCommentFields(args, 'comment', 'unlike');
+      await CommentService.unlikeComment({
+        article: args.articleId,
+        comment: args.commentId,
+        reviewer: result.userId,
+        existingLikeId: result.existingLikeId
+      });
     } catch (error) {
       throw error;
     }
   },
   likeReply: async (args) => {
     try {
-      const userId = await CommentHelperClass
+      const result = await CommentHelperClass
         .validateLikeCommentFields(args, 'reply', 'like');
-      const likeReplyObject = {
+      await CommentService.likeReply({
         article: args.articleId,
         reply: args.replyId,
-        reviewer: userId
-      };
-      await CommentService.likeReply(likeReplyObject);
+        reviewer: result.userId
+      });
     } catch (error) {
       throw error;
     }
   },
+
+  unlikeReply: async (args) => {
+    try {
+      const result = await CommentHelperClass
+        .validateLikeCommentFields(args, 'reply', 'unlike');
+      await CommentService.unlikeReply({
+        article: args.articleId,
+        reply: args.replyId,
+        reviewer: result.userId,
+        existingLikeId: result.existingLikeId
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
 };
 
 export default CommentResolver;

@@ -84,9 +84,8 @@ class ArticleService {
     * @returns {Null} null
     */
   static async createRating(ratingObject) {
-    let session = null;
+    const session = await GeneralService.startTransaction(Rating);
     try {
-      session = await GeneralService.startTransaction(Rating, session);
       const createRatingObject = {
         reviewer: ratingObject.reviewer,
         article: ratingObject.article,
@@ -116,9 +115,8 @@ class ArticleService {
     * @returns {Null} null
     */
   static async addLikeToArticle(likeObject) {
-    let session = null;
+    const session = await GeneralService.startTransaction(Article);
     try {
-      session = await GeneralService.startTransaction(Article, session);
       const createLikeObject = {
         reviewer: likeObject.reviewer,
         article: likeObject.article,
@@ -147,10 +145,8 @@ class ArticleService {
     * @returns {Null} null
     */
   static async unlikeArticle(likeObject) {
-    let session = null;
+    const session = await GeneralService.startTransaction(Article);
     try {
-      session = await GeneralService.startTransaction(Article, session);
-
       await GeneralService
         .delete(Like, {
           $and: [{ reviewer: likeObject.reviewer },
@@ -177,9 +173,8 @@ class ArticleService {
     * @returns {Null} null
     */
   static async createReport(reportObject) {
-    let session = null;
+    const session = await GeneralService.startTransaction(Report);
     try {
-      session = await GeneralService.startTransaction(Report, session);
       const createReportObject = {
         reporter: reportObject.reporter,
         article: reportObject.article,
