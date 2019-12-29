@@ -41,6 +41,9 @@ const articleSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Like'
   }],
+  isDraft: {
+    type: Boolean
+  },
   meta: {
     likes: {
       type: Number,
