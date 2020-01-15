@@ -8,19 +8,16 @@ import UserHelperClass from '../helper/UserHelperClass';
 const articleSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: [true, 'Article title is required']
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
   },
   images: [{
     type: String
   }],
   body: {
-    type: String,
-    required: [true, 'Article body is required']
+    type: String
   },
   comments: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -41,6 +38,10 @@ const articleSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Like'
   }],
+  isDraft: {
+    type: Boolean,
+    default: true
+  },
   meta: {
     likes: {
       type: Number,

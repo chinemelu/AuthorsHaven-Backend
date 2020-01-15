@@ -99,9 +99,10 @@ class ArticleHelperClass {
    * @param {String} args - the argument object
    * @param {String} userId - the user of a validated user in the token
    * @param {String} type - whether like or unlike
+   *  @param {String} savedArticle - article in database
    * @returns {null} - null
    */
-  static async validateLike(args, userId, type) {
+  static async validateLike(args, userId, type, savedArticle) {
     const result = ArticleHelperClass
       .checkIfArgumentIsArticleCommentOrReply(args);
     const existingRating = await GeneralService.findOne(Like, ({
@@ -109,7 +110,14 @@ class ArticleHelperClass {
         result.objectArgument
       ]
     }));
-
+    if (type === 'like' && ArticleHelperClass
+      .isArticleDraft(savedArticle)) {
+      throw new Error('You cannot like a draft article');
+    }
+    if (type === 'unlike' && ArticleHelperClass
+      .isArticleDraft(savedArticle)) {
+      throw new Error('You cannot unlike a draft article');
+    }
     if (type === 'like' && existingRating) {
       throw new Error(`You have already liked this ${result.textPlaceholder}`);
     }
@@ -184,6 +192,10 @@ class ArticleHelperClass {
    */
   static async validateReport(reportType, result) {
     try {
+      if (ArticleHelperClass
+        .isArticleDraft(result.savedArticle)) {
+        throw new Error('You cannot report a draft article');
+      }
       if (!reportType) throw new Error('report Type is required');
       const existingReport = await GeneralService.findOne(Report, ({
         $and: [{ reporter: result.userId },
@@ -200,6 +212,14 @@ class ArticleHelperClass {
     } catch (error) {
       throw error;
     }
+  }
+
+  /**
+  * @param {Object} article - saved article
+ * @returns {Boolean} - true or false
+ */
+  static isArticleDraft(article) {
+    return article.isDraft;
   }
 }
 

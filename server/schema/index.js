@@ -9,7 +9,8 @@ const schema = buildSchema(`
     resetUserPassword(password: String!, token: String! ): User
     loginUser(usernameOrEmail: String!, password: String!): User!
     createArticle(articleInput: ArticleInput): Article!
-    updateArticle(updateArticleInput: UpdateArticleInput): Article
+    publishArticle(updateArticleInput: UpdateArticleInput): Article
+    saveArticle(updateArticleInput: UpdateArticleInput): Article
     deleteArticle(deleteArticleInput: DeleteArticleInput): Article
     addComment(commentInput: commentInput): Comments!
     addReplyToComment(replyBody: String, token: String, commentId:ID
@@ -76,6 +77,7 @@ const schema = buildSchema(`
     reports: [Report]
     comments: [Comments!]!
     meta: meta
+    isDraft: Boolean
   }
 
   type Comments {

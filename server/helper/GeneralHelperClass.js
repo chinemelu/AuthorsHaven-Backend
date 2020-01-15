@@ -34,7 +34,6 @@ class GeneralHelperClass {
 
   /**
   * @param {String} password - password to be hashed
- * @param {String} saltRounds - cost factor for hashing password
  * @returns {Object} - Object containing details of decoded token
  */
   static async encryptPassword(password) {

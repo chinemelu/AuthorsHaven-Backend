@@ -24,6 +24,9 @@ const BookmarkResolver = {
         article: args.articleId,
         owner: result.userId
       };
+      if (ArticleHelperClass.isArticleDraft(result.savedArticle)) {
+        throw new Error('You cannot bookmark a draft article');
+      }
       const createdBookmark = await BookmarkService
         .createBookmark(bookmarkObject);
       return createdBookmark;
