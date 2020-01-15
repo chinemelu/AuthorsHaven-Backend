@@ -25,6 +25,29 @@ const ArticleResolver = {
       throw error;
     }
   },
+  publishArticle: async (args) => {
+    try {
+      args = args.updateArticleInput;
+      const type = {};
+      const result = await ArticleHelperClass
+        .validateInput(args.token, args._id, type);
+
+      if (!args.title) throw new Error('Title is required');
+      if (!args.body) throw new Error('Body is required');
+
+      await GeneralService.update(Article, { _id: args._id }, {
+        title: args.title || result.savedArticle.title,
+        body: args.body || result.savedArticle.body,
+        images: args.images || result.savedArticle.images,
+        meta: {
+          timeToRead: UserHelperClass.timeToReadArticle(args.body)
+        },
+        isDraft: false
+      });
+    } catch (error) {
+      throw error;
+    }
+  },
   readArticle: async (args) => {
     try {
       const savedArticle = await ArticleHelperClass.validateArticle(args.id);
@@ -33,7 +56,7 @@ const ArticleResolver = {
       throw error;
     }
   },
-  updateArticle: async (args) => {
+  saveArticle: async (args) => {
     try {
       args = args.updateArticleInput;
       const type = {
@@ -93,7 +116,8 @@ const ArticleResolver = {
           args.token,
           args.articleId,
         );
-      await ArticleHelperClass.validateLike(args, result.userId, 'like');
+      await ArticleHelperClass
+        .validateLike(args, result.userId, 'like', result.savedArticle);
       const likeObject = {
         article: args.articleId,
         reviewer: result.userId
@@ -111,7 +135,7 @@ const ArticleResolver = {
           args.articleId,
         );
       const existingLikeId = await ArticleHelperClass
-        .validateLike(args, result.userId, 'unlike');
+        .validateLike(args, result.userId, 'unlike', result.savedArticle);
       const likeObject = {
         _id: existingLikeId,
         article: args.articleId,

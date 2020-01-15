@@ -13,6 +13,9 @@ const CommentResolver = {
       args = args.commentInput;
       const result = await ArticleHelperClass
         .validateInput(args.token, args.articleId);
+      if (ArticleHelperClass.isArticleDraft(result.savedArticle)) {
+        throw new Error('You cannot comment on a draft article');
+      }
       const addedComment = await CommentService.create({
         articleId: args.articleId,
         body: args.commentBody,
